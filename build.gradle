@@ -1,0 +1,54 @@
+plugins {
+    id 'java'
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.10.0'
+    id 'maven-publish'
+}
+
+group 'org.openjfx'
+version '1.0.0-SNAPSHOT'
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+    mavenLocal()
+}
+
+dependencies {
+    implementation gradleApi()
+
+    implementation 'com.google.gradle:osdetector-gradle-plugin:1.6.0'
+    implementation 'org.javamodularity:moduleplugin:1.1.1'
+}
+
+gradlePlugin {
+    plugins {
+        javafxPlugin {
+            id = 'org.openjfx.javafxplugin'
+            displayName = 'JavaFX Gradle Plugin'
+            description = 'Plugin that makes it easy to work with JavaFX'
+            implementationClass = 'org.openjfx.gradle.JavaFXPlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/openjfx/javafx-gradle-plugin'
+    vcsUrl = 'git@github.com:openjfx/javafx-gradle-plugin.git'
+    tags = [ 'java', 'javafx' ]
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = project.group
+            artifactId = 'javafx-gradle-plugin'
+            version = project.version
+        }
+    }
+}
