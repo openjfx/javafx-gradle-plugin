@@ -9,7 +9,7 @@ Simplifies working with JavaFX 11+ for gradle projects.
 For modular projects, you only need to apply the plugin. The plugin will automatically add the required JavaFX dependencies based on the module definition.
 
     plugins {
-        id 'org.openjfx.javafxplugin' version '1.0.0'
+        id 'org.openjfx.javafxplugin' version '0.0.1'
     }
 
 ### Non-modular projects
@@ -17,7 +17,7 @@ For modular projects, you only need to apply the plugin. The plugin will automat
 For non-modular projects, you need to apply the plugin and define the list of JavaFX modules required by the project.
 
     plugins {
-        id 'org.openjfx.javafxplugin' version '1.0.0'
+        id 'org.openjfx.javafxplugin' version '0.0.1'
     }
     
     javafx {
