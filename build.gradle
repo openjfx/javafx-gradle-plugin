@@ -39,7 +39,7 @@ gradlePlugin {
 
 pluginBundle {
     website = 'https://github.com/openjfx/javafx-gradle-plugin'
-    vcsUrl = 'git@github.com:openjfx/javafx-gradle-plugin.git'
+    vcsUrl = 'https://github.com/openjfx/javafx-gradle-plugin'
     tags = [ 'java', 'javafx' ]
 }
 
