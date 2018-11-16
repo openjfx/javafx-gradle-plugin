@@ -18,7 +18,7 @@ public class JavaFXOptions {
     public JavaFXOptions(Project project) {
         JavaExec execTask = (JavaExec) project.getTasks().findByName(ApplicationPlugin.TASK_RUN_NAME);
         if (execTask != null) {
-            this.moduleOptions = execTask.getExtensions().getByType(ModuleOptions.class);
+            this.moduleOptions = execTask.getExtensions().findByType(ModuleOptions.class);
         }
     }
 

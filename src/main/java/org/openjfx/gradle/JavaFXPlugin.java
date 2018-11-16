@@ -7,25 +7,20 @@ import com.github.javaparser.ast.modules.ModuleStmt;
 import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.google.gradle.osdetector.OsDetector;
 import com.google.gradle.osdetector.OsDetectorPlugin;
-import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.UnknownDomainObjectException;
-import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSet;
-import org.gradle.internal.impldep.aQute.bnd.osgi.Clazz;
 import org.javamodularity.moduleplugin.ModuleSystemPlugin;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.module.ModuleDescriptor;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,7 +40,6 @@ public class JavaFXPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        project.getPlugins().apply(ApplicationPlugin.class);
         project.getPlugins().apply(OsDetectorPlugin.class);
         project.getPlugins().apply(ModuleSystemPlugin.class);
 
@@ -69,29 +63,24 @@ public class JavaFXPlugin implements Plugin<Project> {
     private void applyDependencies(Project project) {
         project.afterEvaluate(c -> {
             String version = project.getExtensions().getByType(JavaFXOptions.class).getVersion();
-            List<String> modules = Collections.emptyList();
+            var javafxModules = new TreeSet<>(project.getExtensions().getByType(JavaFXOptions.class).getModules());
             String moduleName = (String) project.getExtensions().findByName("moduleName");
             if (moduleName != null) {
-                Optional<ModuleDeclaration> moduleDeclaration = detectModule(project);
-                if (moduleDeclaration.isPresent()) {
-                    modules = moduleDeclaration.get().getModuleStmts().stream()
-                            .filter(ModuleStmt::isModuleRequiresStmt)
-                            .map(ModuleStmt::asModuleRequiresStmt)
-                            .map(NodeWithName::getNameAsString)
-                            .filter(JAVAFX_DEPENDENCIES::containsKey)
-                            .collect(Collectors.toList());
-                }
-            } else {
-                modules = project.getExtensions().getByType(JavaFXOptions.class).getModules();
+                detectModule(project).ifPresent(moduleDeclaration1 ->
+                        javafxModules.addAll(moduleDeclaration1.getModuleStmts().stream()
+                                .filter(ModuleStmt::isModuleRequiresStmt)
+                                .map(ModuleStmt::asModuleRequiresStmt)
+                                .map(NodeWithName::getNameAsString)
+                                .filter(JAVAFX_DEPENDENCIES::containsKey)
+                                .collect(Collectors.toList())));
             }
 
-            project.getLogger().info("MODULES: " + modules);
-
-            modules.stream().flatMap(m -> Stream.concat(Stream.of(m), JAVAFX_DEPENDENCIES.get(m).stream()))
+            javafxModules.stream()
+                    .flatMap(javafxModule -> Stream.concat(Stream.of(javafxModule), JAVAFX_DEPENDENCIES.get(javafxModule).stream()))
                     .map(m -> m.replace(".", "-"))
                     .collect(Collectors.toSet()).forEach(m -> {
-                        project.getDependencies().add("compile",
-                                String.format("org.openjfx:%s:%s:%s", m, version, platform));
+                project.getDependencies().add("compile",
+                        String.format("org.openjfx:%s:%s:%s", m, version, platform));
             });
         });
     }
