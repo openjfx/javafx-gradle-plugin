@@ -10,7 +10,7 @@ For modular projects, you only need to apply the plugin. The plugin will automat
 
     plugins {
         id 'java'
-        id 'org.openjfx.javafxplugin' version '0.0.1'
+        id 'org.openjfx.javafxplugin' version '0.0.2'
     }
 
 ### Non-modular projects
@@ -19,7 +19,7 @@ For non-modular projects, you need to apply the plugin and define the list of Ja
 
     plugins {
         id 'java'
-        id 'org.openjfx.javafxplugin' version '0.0.1'
+        id 'org.openjfx.javafxplugin' version '0.0.2'
     }
     
     javafx {
