@@ -10,9 +10,12 @@ import com.google.gradle.osdetector.OsDetectorPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.UnknownDomainObjectException;
+import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.javamodularity.moduleplugin.ModuleSystemPlugin;
+import org.javamodularity.moduleplugin.tasks.ModuleOptions;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +23,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,7 +66,6 @@ public class JavaFXPlugin implements Plugin<Project> {
 
     private void applyDependencies(Project project) {
         project.afterEvaluate(c -> {
-            String version = project.getExtensions().getByType(JavaFXOptions.class).getVersion();
             var javafxModules = new TreeSet<>(project.getExtensions().getByType(JavaFXOptions.class).getModules());
             String moduleName = (String) project.getExtensions().findByName("moduleName");
             if (moduleName != null) {
@@ -75,12 +78,26 @@ public class JavaFXPlugin implements Plugin<Project> {
                                 .collect(Collectors.toList())));
             }
 
-            javafxModules.stream()
+            Set<String> uniqueJavaFXModules = javafxModules.stream()
                     .flatMap(javafxModule -> Stream.concat(Stream.of(javafxModule), JAVAFX_DEPENDENCIES.get(javafxModule).stream()))
-                    .map(m -> m.replace(".", "-"))
-                    .collect(Collectors.toSet()).forEach(m -> {
+                    .collect(Collectors.toSet());
+
+            JavaExec execTask = (JavaExec) project.getTasks().findByName(ApplicationPlugin.TASK_RUN_NAME);
+            if (execTask != null) {
+                ModuleOptions moduleOptions = execTask.getExtensions().findByType(ModuleOptions.class);
+                if (moduleOptions != null) {
+                    uniqueJavaFXModules.forEach(m -> {
+                        moduleOptions.getAddModules().add(m);
+                    });
+                }
+            }
+
+            String version = project.getExtensions().getByType(JavaFXOptions.class).getVersion();
+            uniqueJavaFXModules.stream()
+                    .map(module -> module.replace(".", "-"))
+                    .forEach(artifact -> {
                 project.getDependencies().add("compile",
-                        String.format("org.openjfx:%s:%s:%s", m, version, platform));
+                        String.format("org.openjfx:%s:%s:%s", artifact, version, platform));
             });
         });
     }
