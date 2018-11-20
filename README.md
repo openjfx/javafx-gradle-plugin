@@ -10,7 +10,7 @@ Using the `plugins` DSL:
 
     plugins {
         id 'java'
-        id 'org.openjfx.javafxplugin' version '0.0.3'
+        id 'org.openjfx.javafxplugin' version '0.0.4'
     }
 
 Alternatively, you can use the `buildscript` DSL:
@@ -22,7 +22,7 @@ Alternatively, you can use the `buildscript` DSL:
             }
         }
         dependencies {
-            classpath 'org.openjfx:javafx-plugin:0.0.3'
+            classpath 'org.openjfx:javafx-plugin:0.0.4'
         }
     }
 
