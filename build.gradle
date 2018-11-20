@@ -23,7 +23,7 @@ dependencies {
     implementation gradleApi()
 
     implementation 'com.google.gradle:osdetector-gradle-plugin:1.6.0'
-    implementation 'org.javamodularity:moduleplugin:1.1.1'
+    implementation 'org.javamodularity:moduleplugin:1.2.0'
 }
 
 gradlePlugin {
