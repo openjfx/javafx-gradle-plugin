@@ -4,7 +4,9 @@ Simplifies working with JavaFX 11+ for gradle projects.
 
 ## Getting started
 
-### Apply the plugin
+To use the plugin, apply the following two steps:
+
+### 1. Apply the plugin
 
 Using the `plugins` DSL:
 
@@ -29,7 +31,7 @@ Alternatively, you can use the `buildscript` DSL:
     apply plugin: 'java'
     apply plugin: 'org.openjfx.javafxplugin'
 
-### Specify JavaFX modules
+### 2. Specify JavaFX modules
 
 Specify all the JavaFX modules that your project uses:
 
