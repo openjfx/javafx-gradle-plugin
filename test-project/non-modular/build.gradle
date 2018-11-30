@@ -1,0 +1,5 @@
+mainClassName = 'org.openjfx.gradle.javafx.test.Main'
+
+javafx {
+    modules = [ 'javafx.controls', 'javafx.web' ]
+}

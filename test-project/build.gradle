@@ -1,0 +1,22 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.openjfx:javafx-plugin:0.0.+"
+    }
+}
+
+subprojects {
+    apply plugin: 'application'
+    apply plugin: 'org.openjfx.javafxplugin'
+
+    sourceCompatibility = 11
+    targetCompatibility = 11
+
+    repositories {
+        mavenCentral()
+    }
+}

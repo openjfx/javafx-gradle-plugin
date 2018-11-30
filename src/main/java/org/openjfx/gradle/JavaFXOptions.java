@@ -1,9 +1,11 @@
 package org.openjfx.gradle;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JavaFXOptions {
 
@@ -27,5 +29,15 @@ public class JavaFXOptions {
 
     public void setModules(List<String> modules) {
         this.modules = modules;
+    }
+
+    public void validateModules() {
+        List<String> invalidModules = this.modules.stream()
+                .filter(module -> JavaFXModule.fromModuleName(module).isEmpty())
+                .collect(Collectors.toList());
+
+        if (! invalidModules.isEmpty()) {
+            throw new GradleException("Found one or more invalid JavaFX module names: " + invalidModules);
+        }
     }
 }
