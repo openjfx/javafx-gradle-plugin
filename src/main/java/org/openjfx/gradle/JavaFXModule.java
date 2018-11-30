@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 public enum JavaFXModule {
 
     BASE,
-    GRAPHICS,
+    GRAPHICS(BASE),
     CONTROLS(BASE, GRAPHICS),
     FXML(BASE, GRAPHICS),
     MEDIA(BASE, GRAPHICS),
