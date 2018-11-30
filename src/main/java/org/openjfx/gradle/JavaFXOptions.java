@@ -31,6 +31,10 @@ public class JavaFXOptions {
         this.modules = modules;
     }
 
+    public void modules(String...moduleNames) {
+        this.modules.addAll(List.of(moduleNames));
+    }
+
     public void validateModules() {
         List<String> invalidModules = this.modules.stream()
                 .filter(module -> JavaFXModule.fromModuleName(module).isEmpty())
