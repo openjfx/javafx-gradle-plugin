@@ -9,23 +9,11 @@ import org.gradle.api.tasks.JavaExec;
 import org.javamodularity.moduleplugin.ModuleSystemPlugin;
 import org.javamodularity.moduleplugin.tasks.ModuleOptions;
 
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class JavaFXPlugin implements Plugin<Project> {
-
-    private Map<String, List<String>> JAVAFX_DEPENDENCIES = Map.of(
-            "javafx.base", List.of(),
-            "javafx.controls", List.of("javafx.base", "javafx.graphics"),
-            "javafx.fxml", List.of("javafx.base", "javafx.graphics"),
-            "javafx.graphics", List.of("javafx.base"),
-            "javafx.media", List.of("javafx.base", "javafx.graphics"),
-            "javafx.swing", List.of("javafx.base", "javafx.graphics"),
-            "javafx.web", List.of("javafx.base", "javafx.controls", "javafx.graphics", "javafx.media")
-    );
 
     private String platform;
 
@@ -53,26 +41,28 @@ public class JavaFXPlugin implements Plugin<Project> {
 
     private void applyDependencies(Project project) {
         project.afterEvaluate(c -> {
-            var definedJavaFXModules = new TreeSet<>(project.getExtensions().getByType(JavaFXOptions.class).getModules());
+            JavaFXOptions javaFXOptions = project.getExtensions().getByType(JavaFXOptions.class);
+            javaFXOptions.validateModules();
+
+            var definedJavaFXModuleNames = new TreeSet<>(javaFXOptions.getModules());
 
             JavaExec execTask = (JavaExec) project.getTasks().findByName(ApplicationPlugin.TASK_RUN_NAME);
             if (execTask != null) {
                 ModuleOptions moduleOptions = execTask.getExtensions().findByType(ModuleOptions.class);
                 if (moduleOptions != null) {
-                    definedJavaFXModules.forEach(javaFXModule -> moduleOptions.getAddModules().add(javaFXModule));
+                    definedJavaFXModuleNames.forEach(javaFXModule -> moduleOptions.getAddModules().add(javaFXModule));
                 }
             }
 
-            var allJavaFXModules = definedJavaFXModules.stream()
-                    .flatMap(javaFXModule -> Stream.concat(Stream.of(javaFXModule), JAVAFX_DEPENDENCIES.get(javaFXModule).stream()))
+            var javaFXModules = definedJavaFXModuleNames.stream()
+                    .map(JavaFXModule::fromModuleName)
+                    .flatMap(Optional::stream)
+                    .flatMap(javaFXModule -> javaFXModule.getMavenDependencies().stream())
                     .collect(Collectors.toSet());
 
-            String javaFXVersion = project.getExtensions().getByType(JavaFXOptions.class).getVersion();
-            allJavaFXModules.stream()
-                    .map(javaFXModule -> javaFXModule.replace(".", "-"))
-                    .forEach(javaFXArtifact -> {
+            javaFXModules.forEach(javaFXModule -> {
                 project.getDependencies().add("compile",
-                        String.format("org.openjfx:%s:%s:%s", javaFXArtifact, javaFXVersion, platform));
+                        String.format("org.openjfx:%s:%s:%s", javaFXModule.getArtifactName(), javaFXOptions.getVersion(), platform));
             });
         });
     }
