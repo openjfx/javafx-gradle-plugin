@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'org.openjfx'
-version '0.0.5'
+version '0.0.6-SNAPSHOT'
 
 sourceCompatibility = 11
 targetCompatibility = 11
