@@ -71,7 +71,7 @@ public class JavaFXPlugin implements Plugin<Project> {
             allJavaFXModules.stream()
                     .map(javaFXModule -> javaFXModule.replace(".", "-"))
                     .forEach(javaFXArtifact -> {
-                project.getDependencies().add("compile",
+                project.getDependencies().add("implementation",
                         String.format("org.openjfx:%s:%s:%s", javaFXArtifact, javaFXVersion, platform));
             });
         });
