@@ -59,7 +59,7 @@ public class JavaFXOptions {
                     .collect(Collectors.toSet());
 
         javaFXModules.forEach(javaFXModule -> {
-                project.getDependencies().add("compile",
+                project.getDependencies().add("implementation",
                         String.format("org.openjfx:%s:%s:%s", javaFXModule.getArtifactName(), getVersion(), platform));
 	    });
     }
