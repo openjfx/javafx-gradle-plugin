@@ -1,6 +1,5 @@
 package org.openjfx.gradle;
 
-import com.google.gradle.osdetector.OsDetector;
 import com.google.gradle.osdetector.OsDetectorPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -13,8 +12,6 @@ import java.util.TreeSet;
 
 public class JavaFXPlugin implements Plugin<Project> {
 
-    private String platform;
-
     @Override
     public void apply(Project project) {
         project.getPlugins().apply(OsDetectorPlugin.class);
@@ -22,37 +19,23 @@ public class JavaFXPlugin implements Plugin<Project> {
 
         project.getExtensions().create("javafx", JavaFXOptions.class, project);
 
-        detectPlatform(project);
-
-        applyDependencies(project);
+        updateApplicationRunTaskModules(project);
     }
 
-    private void detectPlatform(Project project) {
-        String os = project.getExtensions().getByType(OsDetector.class).getOs();
-        platform = os;
-        if ("osx".equals(os)) {
-            platform = "mac";
-        } else if ("windows".equals(os)) {
-            platform = "win";
-        }
-    }
-
-    private void applyDependencies(Project project) {
-	project.afterEvaluate(c -> {
-            JavaFXOptions javaFXOptions = project.getExtensions().getByType(JavaFXOptions.class);
-            javaFXOptions.validateModules();
-
-            var definedJavaFXModuleNames = new TreeSet<>(javaFXOptions.getModules());
-
+    private void updateApplicationRunTaskModules(Project project) {
+        project.afterEvaluate(c -> {
             JavaExec execTask = (JavaExec) project.getTasks().findByName(ApplicationPlugin.TASK_RUN_NAME);
             if (execTask != null) {
                 ModuleOptions moduleOptions = execTask.getExtensions().findByType(ModuleOptions.class);
                 if (moduleOptions != null) {
+                    JavaFXOptions javaFXOptions = project.getExtensions().getByType(JavaFXOptions.class);
+                    JavaFXModule.validateModules(javaFXOptions.getModules());
+
+                    var definedJavaFXModuleNames = new TreeSet<>(javaFXOptions.getModules());
+
                     definedJavaFXModuleNames.forEach(javaFXModule -> moduleOptions.getAddModules().add(javaFXModule));
                 }
             }
-
         });
-
     }
 }

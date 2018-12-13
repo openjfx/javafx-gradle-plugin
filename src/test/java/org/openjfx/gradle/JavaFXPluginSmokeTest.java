@@ -15,7 +15,7 @@ class JavaFXPluginSmokeTest {
         var result = GradleRunner.create()
                 .withProjectDir(new File("test-project"))
                 .withGradleVersion("5.0")
-                .withArguments("clean", "run", "--stacktrace")
+                .withArguments("clean", "build", "run", "--stacktrace")
                 .forwardOutput()
                 .build();
 
