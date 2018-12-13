@@ -11,7 +11,6 @@ To use the plugin, apply the following two steps:
 Using the `plugins` DSL:
 
     plugins {
-        id 'java'
         id 'org.openjfx.javafxplugin' version '0.0.5'
     }
 
@@ -28,7 +27,6 @@ Alternatively, you can use the `buildscript` DSL:
         }
     }
 
-    apply plugin: 'java'
     apply plugin: 'org.openjfx.javafxplugin'
 
 ### 2. Specify JavaFX modules
