@@ -9,9 +9,7 @@ import org.gradle.api.tasks.JavaExec;
 import org.javamodularity.moduleplugin.ModuleSystemPlugin;
 import org.javamodularity.moduleplugin.tasks.ModuleOptions;
 
-import java.util.Optional;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 public class JavaFXPlugin implements Plugin<Project> {
 
@@ -40,7 +38,7 @@ public class JavaFXPlugin implements Plugin<Project> {
     }
 
     private void applyDependencies(Project project) {
-        project.afterEvaluate(c -> {
+	project.afterEvaluate(c -> {
             JavaFXOptions javaFXOptions = project.getExtensions().getByType(JavaFXOptions.class);
             javaFXOptions.validateModules();
 
@@ -54,16 +52,7 @@ public class JavaFXPlugin implements Plugin<Project> {
                 }
             }
 
-            var javaFXModules = definedJavaFXModuleNames.stream()
-                    .map(JavaFXModule::fromModuleName)
-                    .flatMap(Optional::stream)
-                    .flatMap(javaFXModule -> javaFXModule.getMavenDependencies().stream())
-                    .collect(Collectors.toSet());
-
-            javaFXModules.forEach(javaFXModule -> {
-                project.getDependencies().add("implementation",
-                        String.format("org.openjfx:%s:%s:%s", javaFXModule.getArtifactName(), javaFXOptions.getVersion(), platform));
-            });
         });
+
     }
 }
