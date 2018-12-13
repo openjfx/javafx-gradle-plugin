@@ -1,5 +1,6 @@
 package org.openjfx.gradle;
 
+import org.gradle.api.GradleException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class JavaFXModuleTest {
 
@@ -40,6 +42,25 @@ class JavaFXModuleTest {
         assertTrue(dependencies.contains(module));
         for (JavaFXModule dependentModule : JavaFXModule.CONTROLS.getDependentModules()) {
             assertTrue(dependencies.contains(dependentModule));
+        }
+    }
+
+    @Test
+    void validateWithValidModules() {
+        var moduleNames = List.of(JavaFXModule.CONTROLS.getModuleName(), JavaFXModule.WEB.getModuleName());
+
+        JavaFXModule.validateModules(moduleNames);
+    }
+
+    @Test
+    void validateWithInvalidModules() {
+        var moduleNames = List.of("javafx.unknown", JavaFXModule.CONTROLS.getModuleName(), JavaFXModule.WEB.getModuleName());
+
+        try {
+            JavaFXModule.validateModules(moduleNames);
+            fail("Validate Modules must throw GradleException.");
+        } catch (GradleException e) {
+            // expected
         }
     }
 }
