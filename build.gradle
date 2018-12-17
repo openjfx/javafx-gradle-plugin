@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'java-gradle-plugin'
+    id 'com.github.hierynomus.license' version '0.15.0'
     id 'com.gradle.plugin-publish' version '0.10.0'
     id 'maven-publish'
 }
@@ -58,5 +59,12 @@ publishing {
             artifactId = 'javafx-gradle-plugin'
             version = project.version
         }
+    }
+}
+
+license {
+    skipExistingHeaders = true
+    mapping {
+        java = 'SLASHSTAR_STYLE'
     }
 }
