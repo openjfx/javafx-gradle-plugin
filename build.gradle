@@ -1,8 +1,8 @@
 plugins {
-    id 'java'
     id 'java-gradle-plugin'
     id 'com.github.hierynomus.license' version '0.15.0'
     id 'com.gradle.plugin-publish' version '0.10.0'
+    id 'com.github.ben-manes.versions' version '0.20.0'
     id 'maven-publish'
 }
 
@@ -23,8 +23,8 @@ repositories {
 dependencies {
     implementation gradleApi()
 
-    implementation 'com.google.gradle:osdetector-gradle-plugin:1.6.0'
-    implementation 'org.javamodularity:moduleplugin:1.3.0'
+    implementation 'com.google.gradle:osdetector-gradle-plugin:1.6.1'
+    implementation 'org.javamodularity:moduleplugin:1.4.0'
 
     testImplementation gradleTestKit()
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
