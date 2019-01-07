@@ -11,7 +11,7 @@ To use the plugin, apply the following two steps:
 Using the `plugins` DSL:
 
     plugins {
-        id 'org.openjfx.javafxplugin' version '0.0.5'
+        id 'org.openjfx.javafxplugin' version '0.0.6'
     }
 
 Alternatively, you can use the `buildscript` DSL:
@@ -23,7 +23,7 @@ Alternatively, you can use the `buildscript` DSL:
             }
         }
         dependencies {
-            classpath 'org.openjfx:javafx-plugin:0.0.5'
+            classpath 'org.openjfx:javafx-plugin:0.0.6'
         }
     }
 
