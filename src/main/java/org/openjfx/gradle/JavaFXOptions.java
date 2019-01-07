@@ -46,7 +46,7 @@ public class JavaFXOptions {
 
     public JavaFXOptions(Project project) {
         this.project = project;
-        this.platform = JavaFXPlatform.detect(project);//detectPlatform();
+        this.platform = JavaFXPlatform.detect(project);
     }
 
     public JavaFXPlatform getPlatform() {

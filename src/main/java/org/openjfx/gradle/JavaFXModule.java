@@ -72,6 +72,10 @@ public enum JavaFXModule {
         return PREFIX_ARTIFACT + name().toLowerCase(Locale.ROOT);
     }
 
+    public String getPlatformJarFileName(String version, JavaFXPlatform platform) {
+        return getArtifactName() + "-" + version + "-" + platform.getClassifier() + ".jar";
+    }
+
     public static Set<JavaFXModule> getJavaFXModules(List<String> moduleNames) {
         validateModules(moduleNames);
 
