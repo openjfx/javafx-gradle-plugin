@@ -41,7 +41,7 @@ public class JavaFXOptions {
     private final Project project;
     private final JavaFXPlatform platform;
 
-    private String version = "11.0.1";
+    private String version = "11.0.2";
     private List<String> modules = new ArrayList<>();
 
     public JavaFXOptions(Project project) {
