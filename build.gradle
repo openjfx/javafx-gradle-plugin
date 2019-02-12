@@ -1,10 +1,10 @@
 plugins {
+    id 'com.gradle.build-scan' version '2.1'
     id 'java-gradle-plugin'
     id 'com.github.hierynomus.license' version '0.15.0'
     id 'com.gradle.plugin-publish' version '0.10.0'
     id 'com.github.ben-manes.versions' version '0.20.0'
     id 'maven-publish'
-    id 'com.gradle.build-scan' version '2.1'
 }
 
 buildScan {
