@@ -43,14 +43,13 @@ To use the plugin, apply the following two steps:
     buildscript {
         repositories {
             maven {
-                setUrl( "https://plugins.gradle.org/m2/")
+                setUrl("https://plugins.gradle.org/m2/")
             }
         }
         dependencies {
-            classpath( "org.openjfx:javafx-plugin:0.0.7")
+            classpath("org.openjfx:javafx-plugin:0.0.7")
         }
     }
-
     apply(plugin = "org.openjfx.javafxplugin")
 
 
@@ -67,6 +66,5 @@ Specify all the JavaFX modules that your project uses:
 **Kotlin**
 
     javafx {
-        modules.add("javafx.controls")
-        modules.add("javafx.fxml")
+        modules = listOf("javafx.controls", "javafx.fxml")
     }
