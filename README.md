@@ -36,7 +36,6 @@ To use the plugin, apply the following two steps:
             classpath 'org.openjfx:javafx-plugin:0.0.7'
         }
     }
-    
     apply plugin: 'org.openjfx.javafxplugin'
 
 **Kotlin**
