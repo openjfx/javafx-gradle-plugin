@@ -66,5 +66,5 @@ Specify all the JavaFX modules that your project uses:
 **Kotlin**
 
     javafx {
-        modules = listOf("javafx.controls", "javafx.fxml")
+        modules("javafx.controls", "javafx.fxml")
     }
