@@ -68,3 +68,22 @@ Specify all the JavaFX modules that your project uses:
     javafx {
         modules("javafx.controls", "javafx.fxml")
     }
+    
+### 3. Specify JavaFX version
+
+To override the default JavaFX version, a version string can be declared.
+This will make sure that all the modules belong to this specific version:
+
+**Groovy**
+
+    javafx {
+        version = '12'
+        modules = [ 'javafx.controls', 'javafx.fxml' ]
+    }
+
+**Kotlin**
+
+    javafx {
+        version = "12"
+        modules("javafx.controls", "javafx.fxml")
+    }
