@@ -42,6 +42,7 @@ public class JavaFXOptions {
     private final JavaFXPlatform platform;
 
     private String version = "11.0.2";
+    private String configuration = "implementation"
     private List<String> modules = new ArrayList<>();
 
     public JavaFXOptions(Project project) {
@@ -61,6 +62,14 @@ public class JavaFXOptions {
         this.version = version;
         updateJavaFXDependencies();
     }
+    
+    public void setConfiguration(String configuration) {
+        this.configuration = configuraton;
+    }
+    
+    public String getConfiguration() {
+        return configuration;
+    }
 
     public List<String> getModules() {
         return modules;
@@ -79,7 +88,7 @@ public class JavaFXOptions {
         clearJavaFXDependencies();
 
         JavaFXModule.getJavaFXModules(this.modules).forEach(javaFXModule -> {
-            project.getDependencies().add("implementation",
+            project.getDependencies().add(getConfiguration(),
                     String.format("%s:%s:%s:%s", MAVEN_JAVAFX_ARTIFACT_GROUP_ID, javaFXModule.getArtifactName(),
                             getVersion(), getPlatform().getClassifier()));
         });
