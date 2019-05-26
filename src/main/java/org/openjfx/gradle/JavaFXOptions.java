@@ -42,7 +42,7 @@ public class JavaFXOptions {
     private final JavaFXPlatform platform;
 
     private String version = "11.0.2";
-    private String configuration = "implementation"
+    private String configuration = "implementation";
     private List<String> modules = new ArrayList<>();
 
     public JavaFXOptions(Project project) {
