@@ -87,3 +87,28 @@ This will make sure that all the modules belong to this specific version:
         version = "12"
         modules("javafx.controls", "javafx.fxml")
     }
+
+### 4. Cross-platform projects and libraries
+
+JavaFX modules require native binaries for each platform. The plugin only
+includes binaries for the platform running the build. By declaring the 
+dependency configuration **compileOnly**, the native binaries will not be 
+included. You will need to provide those separately during deployment for 
+each target platform.
+
+**Groovy**
+
+    javafx {
+        version = '12'
+        modules = [ 'javafx.controls', 'javafx.fxml' ]
+        configuration = 'compileOnly'
+    }
+
+**Kotlin**
+
+    javafx {
+        version = "12"
+        modules("javafx.controls", "javafx.fxml")
+        configuration = "compileOnly"
+    }
+
