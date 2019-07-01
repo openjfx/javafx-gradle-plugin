@@ -23,7 +23,6 @@ repositories {
     maven {
         url "https://plugins.gradle.org/m2/"
     }
-    mavenLocal()
 }
 
 dependencies {
@@ -64,17 +63,19 @@ publishing {
             groupId = project.group
             artifactId = 'javafx-gradle-plugin'
             version = project.version
+
+            from components.java
         }
     }
     repositories {
         maven {
-            credentials {
-                username sonatypeUsername
-                password sonatypePassword
+            if (project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
+                credentials {
+                    username project.property('sonatypeUsername')
+                    password project.property('sonatypePassword')
+                }
+                url = "https://oss.sonatype.org/content/repositories/snapshots/"
             }
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
-            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
     }
 }
