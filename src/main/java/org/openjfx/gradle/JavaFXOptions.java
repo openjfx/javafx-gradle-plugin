@@ -64,8 +64,10 @@ public class JavaFXOptions {
         updateJavaFXDependencies();
     }
     
-    /** Set configuration name for dependencies, e.g. 
-     'implementation', 'compileOnly' etc. */
+    /** Set the configuration name for dependencies, e.g.
+     * 'implementation', 'compileOnly' etc.
+     * @param configuration The configuration name for dependencies
+     */
     public void setConfiguration(String configuration) {
         this.configuration = configuration;
         updateJavaFXDependencies();
