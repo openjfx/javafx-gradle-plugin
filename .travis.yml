@@ -27,7 +27,7 @@ script:
 deploy:
   # Deploy snapshots on every commit made to master
   - provider: script
-    # script: ./gradlew uploadPublished -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD
+    # script: ./gradlew publish -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD
     # Test signing with snapshot releases
     script: sh .ci/release.sh
     skip_cleanup: true
