@@ -43,7 +43,7 @@ public class JavaFXOptions {
 
     private String version = "11.0.2";
     private String configuration = "implementation";
-    private String oldConfiguration;
+    private String lastUpdatedConfiguration;
     private List<String> modules = new ArrayList<>();
 
     public JavaFXOptions(Project project) {
@@ -98,14 +98,14 @@ public class JavaFXOptions {
                 project.getDependencies().add(configuration,
                     String.format("%s:%s:%s:%s", MAVEN_JAVAFX_ARTIFACT_GROUP_ID, javaFXModule.getArtifactName(),
                             getVersion(), getPlatform().getClassifier())));
-        oldConfiguration = configuration;
+        lastUpdatedConfiguration = configuration;
     }
 
     private void clearJavaFXDependencies() {
-        if (oldConfiguration == null) {
+        if (lastUpdatedConfiguration == null) {
             return;
         }
-        var configuration = project.getConfigurations().findByName(oldConfiguration);
+        var configuration = project.getConfigurations().findByName(lastUpdatedConfiguration);
         if (configuration != null) {
             configuration.getDependencies()
                     .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
