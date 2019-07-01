@@ -1,8 +1,10 @@
-language: java
+dist: trusty
 
 sudo: required
 
-dist: trusty
+language: java
+
+jdk: openjdk11
 
 install: true
 
@@ -22,5 +24,19 @@ before_script:
 script:
     - TERM=dumb ./gradlew build --scan
 
-jdk:
-    - oraclejdk11
+deploy:
+  # Deploy snapshots on every commit made to master
+  - provider: script
+    # script: ./gradlew uploadPublished -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD
+    # Test signing with snapshot releases
+    script: sh .ci/release.sh
+    skip_cleanup: true
+    on:
+      branch: master
+      
+  # Deploy releases on every tag push
+  - provider: script
+    script: sh .ci/release.sh
+    skip_cleanup: true
+    on:
+      tags: true
