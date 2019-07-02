@@ -43,6 +43,7 @@ public class JavaFXOptions {
 
     private String version = "11.0.2";
     private String configuration = "implementation";
+    private String lastUpdatedConfiguration;
     private List<String> modules = new ArrayList<>();
 
     public JavaFXOptions(Project project) {
@@ -63,8 +64,10 @@ public class JavaFXOptions {
         updateJavaFXDependencies();
     }
     
-    /** Set configuration name for dependencies, e.g. 
-     'implementation', 'compileOnly' etc. */
+    /** Set the configuration name for dependencies, e.g.
+     * 'implementation', 'compileOnly' etc.
+     * @param configuration The configuration name for dependencies
+     */
     public void setConfiguration(String configuration) {
         this.configuration = configuration;
         updateJavaFXDependencies();
@@ -90,17 +93,21 @@ public class JavaFXOptions {
     private void updateJavaFXDependencies() {
         clearJavaFXDependencies();
 
-        JavaFXModule.getJavaFXModules(this.modules).forEach(javaFXModule -> {
-            project.getDependencies().add(getConfiguration(),
+        String configuration = getConfiguration();
+        JavaFXModule.getJavaFXModules(this.modules).forEach(javaFXModule ->
+                project.getDependencies().add(configuration,
                     String.format("%s:%s:%s:%s", MAVEN_JAVAFX_ARTIFACT_GROUP_ID, javaFXModule.getArtifactName(),
-                            getVersion(), getPlatform().getClassifier()));
-        });
+                            getVersion(), getPlatform().getClassifier())));
+        lastUpdatedConfiguration = configuration;
     }
 
     private void clearJavaFXDependencies() {
-        var implementationConfiguration = project.getConfigurations().findByName("implementation");
-        if (implementationConfiguration != null) {
-            implementationConfiguration.getDependencies()
+        if (lastUpdatedConfiguration == null) {
+            return;
+        }
+        var configuration = project.getConfigurations().findByName(lastUpdatedConfiguration);
+        if (configuration != null) {
+            configuration.getDependencies()
                     .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
         }
     }

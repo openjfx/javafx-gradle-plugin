@@ -29,53 +29,76 @@
  */
 package org.openjfx.gradle.tasks;
 
+import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.TaskAction;
 import org.javamodularity.moduleplugin.tasks.ModuleOptions;
 import org.openjfx.gradle.JavaFXModule;
 import org.openjfx.gradle.JavaFXOptions;
 import org.openjfx.gradle.JavaFXPlatform;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 
-public class ExecTask {
+public class ExecTask extends DefaultTask {
 
-    public void configure(Project project) {
-        project.afterEvaluate(c -> {
-            JavaExec execTask = (JavaExec) project.getTasks().findByName(ApplicationPlugin.TASK_RUN_NAME);
+    private final Project project;
+    private JavaExec execTask;
+
+    @Inject
+    public ExecTask(Project project) {
+        this.project = project;
+        project.getPluginManager().withPlugin(ApplicationPlugin.APPLICATION_PLUGIN_NAME, e -> {
+            execTask = (JavaExec) project.getTasks().findByName(ApplicationPlugin.TASK_RUN_NAME);
             if (execTask != null) {
-                JavaFXOptions javaFXOptions = project.getExtensions().getByType(JavaFXOptions.class);
-                JavaFXModule.validateModules(javaFXOptions.getModules());
-
-                var definedJavaFXModuleNames = new TreeSet<>(javaFXOptions.getModules());
-                if (!definedJavaFXModuleNames.isEmpty()) {
-                    ModuleOptions moduleOptions = execTask.getExtensions().findByType(ModuleOptions.class);
-                    if (moduleOptions != null) {
-                        definedJavaFXModuleNames.forEach(javaFXModule -> moduleOptions.getAddModules().add(javaFXModule));
-                    } else {
-                        var javaFXModuleJvmArgs = List.of(
-                                "--module-path", execTask.getClasspath()
-                                        .filter(jar -> isJavaFXJar(jar, javaFXOptions.getVersion(), javaFXOptions.getPlatform()))
-                                        .getAsPath());
-
-                        var jvmArgs = new ArrayList<String>();
-
-                        jvmArgs.add("--add-modules");
-                        jvmArgs.add(String.join(",", definedJavaFXModuleNames));
-
-                        jvmArgs.addAll(execTask.getJvmArgs());
-                        jvmArgs.addAll(javaFXModuleJvmArgs);
-
-                        execTask.setJvmArgs(jvmArgs);
-                    }
-                }
+                execTask.dependsOn(this);
+            } else {
+                throw new GradleException("Run task not found.");
             }
         });
+    }
+
+    @TaskAction
+    public void action() {
+        if (execTask != null) {
+            JavaFXOptions javaFXOptions = project.getExtensions().getByType(JavaFXOptions.class);
+            JavaFXModule.validateModules(javaFXOptions.getModules());
+
+            var definedJavaFXModuleNames = new TreeSet<>(javaFXOptions.getModules());
+            if (!definedJavaFXModuleNames.isEmpty()) {
+                ModuleOptions moduleOptions = execTask.getExtensions().findByType(ModuleOptions.class);
+                if (moduleOptions != null) {
+                    definedJavaFXModuleNames.forEach(javaFXModule -> moduleOptions.getAddModules().add(javaFXModule));
+                } else {
+                    var javaFXModuleJvmArgs = List.of(
+                            "--module-path", execTask.getClasspath()
+                                    .filter(jar -> isJavaFXJar(jar, javaFXOptions.getVersion(), javaFXOptions.getPlatform()))
+                                    .getAsPath());
+
+                    var jvmArgs = new ArrayList<String>();
+
+                    jvmArgs.add("--add-modules");
+                    jvmArgs.add(String.join(",", definedJavaFXModuleNames));
+
+                    List<String> execJvmArgs = execTask.getJvmArgs();
+                    if (execJvmArgs != null) {
+                        jvmArgs.addAll(execJvmArgs);
+                    }
+                    jvmArgs.addAll(javaFXModuleJvmArgs);
+
+                    execTask.setJvmArgs(jvmArgs);
+                }
+            }
+        } else {
+            throw new GradleException("Run task not found. Please, make sure the Application plugin is applied");
+        }
     }
 
     private static boolean isJavaFXJar(File jar, String version, JavaFXPlatform platform) {
