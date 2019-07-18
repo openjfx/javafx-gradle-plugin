@@ -68,6 +68,10 @@ public enum JavaFXModule {
         return PREFIX_MODULE + name().toLowerCase(Locale.ROOT);
     }
 
+    public String getModuleJarFileName() {
+        return getModuleName() + ".jar";
+    }
+
     public String getArtifactName() {
         return PREFIX_ARTIFACT + name().toLowerCase(Locale.ROOT);
     }
