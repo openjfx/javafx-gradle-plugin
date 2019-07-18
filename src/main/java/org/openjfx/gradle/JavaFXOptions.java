@@ -150,10 +150,9 @@ public class JavaFXOptions {
             if (sdkRepo != null) {
                 configuration.getDependencies()
                         .removeIf(dependency -> dependency.getName().startsWith(PREFIX_MODULE));
-            } else {
-                configuration.getDependencies()
-                        .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
             }
+            configuration.getDependencies()
+                    .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
         }
     }
 }
