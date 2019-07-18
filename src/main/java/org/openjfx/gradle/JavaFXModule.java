@@ -49,7 +49,7 @@ public enum JavaFXModule {
     SWING(BASE, GRAPHICS),
     WEB(BASE, CONTROLS, GRAPHICS, MEDIA);
 
-    private static final String PREFIX_MODULE = "javafx.";
+    static final String PREFIX_MODULE = "javafx.";
     private static final String PREFIX_ARTIFACT = "javafx-";
 
     private List<JavaFXModule> dependentModules;

@@ -30,9 +30,16 @@
 package org.openjfx.gradle;
 
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.repositories.FlatDirectoryArtifactRepository;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static org.openjfx.gradle.JavaFXModule.PREFIX_MODULE;
 
 public class JavaFXOptions {
 
@@ -42,9 +49,11 @@ public class JavaFXOptions {
     private final JavaFXPlatform platform;
 
     private String version = "12.0.1";
+    private String sdk;
     private String configuration = "implementation";
     private String lastUpdatedConfiguration;
     private List<String> modules = new ArrayList<>();
+    private FlatDirectoryArtifactRepository sdkRepo;
 
     public JavaFXOptions(Project project) {
         this.project = project;
@@ -63,7 +72,21 @@ public class JavaFXOptions {
         this.version = version;
         updateJavaFXDependencies();
     }
-    
+
+    /**
+     * If set, the JavaFX modules will be taken from this local
+     * repository, and not from Maven Central
+     * @param sdk, the path to the local JavaFX SDK/lib folder
+     */
+    public void setSdk(String sdk) {
+        this.sdk = sdk;
+        updateJavaFXDependencies();
+    }
+
+    public String getSdk() {
+        return sdk;
+    }
+
     /** Set the configuration name for dependencies, e.g.
      * 'implementation', 'compileOnly' etc.
      * @param configuration The configuration name for dependencies
@@ -72,7 +95,7 @@ public class JavaFXOptions {
         this.configuration = configuration;
         updateJavaFXDependencies();
     }
-    
+
     public String getConfiguration() {
         return configuration;
     }
@@ -94,21 +117,43 @@ public class JavaFXOptions {
         clearJavaFXDependencies();
 
         String configuration = getConfiguration();
-        JavaFXModule.getJavaFXModules(this.modules).forEach(javaFXModule ->
+        JavaFXModule.getJavaFXModules(this.modules).forEach(javaFXModule -> {
+            if (sdkRepo != null) {
+                project.getDependencies().add(configuration, "name:" + javaFXModule.getModuleName());
+            } else {
                 project.getDependencies().add(configuration,
-                    String.format("%s:%s:%s:%s", MAVEN_JAVAFX_ARTIFACT_GROUP_ID, javaFXModule.getArtifactName(),
-                            getVersion(), getPlatform().getClassifier())));
+                        String.format("%s:%s:%s:%s", MAVEN_JAVAFX_ARTIFACT_GROUP_ID, javaFXModule.getArtifactName(),
+                                getVersion(), getPlatform().getClassifier()));
+            }
+        });
         lastUpdatedConfiguration = configuration;
     }
 
     private void clearJavaFXDependencies() {
+        if (sdkRepo != null) {
+            project.getRepositories().remove(sdkRepo);
+            sdkRepo = null;
+        }
+
+        if (sdk != null && ! sdk.isEmpty()) {
+            Map<String, String> dirs = new HashMap<>();
+            dirs.put("name", "sdkRepo");
+            dirs.put("dirs", sdk);
+            sdkRepo = project.getRepositories().flatDir(dirs);
+        }
+
         if (lastUpdatedConfiguration == null) {
             return;
         }
         var configuration = project.getConfigurations().findByName(lastUpdatedConfiguration);
         if (configuration != null) {
-            configuration.getDependencies()
-                    .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
+            if (sdkRepo != null) {
+                configuration.getDependencies()
+                        .removeIf(dependency -> dependency.getName().startsWith(PREFIX_MODULE));
+            } else {
+                configuration.getDependencies()
+                        .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
+            }
         }
     }
 }
