@@ -112,3 +112,24 @@ each target platform.
         configuration = "compileOnly"
     }
 
+### 5. Using a local JavaFX SDK
+
+By default, JavaFX modules are retrieved from Maven Central. 
+However, a local JavaFX SDK can be used instead, for instance in the case of 
+a custom build of OpenJFX.
+
+Setting a valid path to the local JavaFX SDK will take precedence:
+
+**Groovy**
+
+    javafx {
+        sdk = '/path/to/javafx-sdk'
+        modules = [ 'javafx.controls', 'javafx.fxml' ]
+    }
+
+**Kotlin**
+
+    javafx {
+        sdk = "/path/to/javafx-sdk"
+        modules("javafx.controls", "javafx.fxml")
+    }

@@ -30,21 +30,30 @@
 package org.openjfx.gradle;
 
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.repositories.FlatDirectoryArtifactRepository;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static org.openjfx.gradle.JavaFXModule.PREFIX_MODULE;
 
 public class JavaFXOptions {
 
     private static final String MAVEN_JAVAFX_ARTIFACT_GROUP_ID = "org.openjfx";
+    private static final String JAVAFX_SDK_LIB_FOLDER = "lib";
 
     private final Project project;
     private final JavaFXPlatform platform;
 
     private String version = "12.0.1";
+    private String sdk;
     private String configuration = "implementation";
     private String lastUpdatedConfiguration;
     private List<String> modules = new ArrayList<>();
+    private FlatDirectoryArtifactRepository customSDKArtifactRepository;
 
     public JavaFXOptions(Project project) {
         this.project = project;
@@ -63,7 +72,21 @@ public class JavaFXOptions {
         this.version = version;
         updateJavaFXDependencies();
     }
-    
+
+    /**
+     * If set, the JavaFX modules will be taken from this local
+     * repository, and not from Maven Central
+     * @param sdk, the path to the local JavaFX SDK folder
+     */
+    public void setSdk(String sdk) {
+        this.sdk = sdk;
+        updateJavaFXDependencies();
+    }
+
+    public String getSdk() {
+        return sdk;
+    }
+
     /** Set the configuration name for dependencies, e.g.
      * 'implementation', 'compileOnly' etc.
      * @param configuration The configuration name for dependencies
@@ -72,7 +95,7 @@ public class JavaFXOptions {
         this.configuration = configuration;
         updateJavaFXDependencies();
     }
-    
+
     public String getConfiguration() {
         return configuration;
     }
@@ -94,19 +117,44 @@ public class JavaFXOptions {
         clearJavaFXDependencies();
 
         String configuration = getConfiguration();
-        JavaFXModule.getJavaFXModules(this.modules).forEach(javaFXModule ->
+        JavaFXModule.getJavaFXModules(this.modules).forEach(javaFXModule -> {
+            if (customSDKArtifactRepository != null) {
+                project.getDependencies().add(configuration, Map.of("name", javaFXModule.getModuleName()));
+            } else {
                 project.getDependencies().add(configuration,
-                    String.format("%s:%s:%s:%s", MAVEN_JAVAFX_ARTIFACT_GROUP_ID, javaFXModule.getArtifactName(),
-                            getVersion(), getPlatform().getClassifier())));
+                        String.format("%s:%s:%s:%s", MAVEN_JAVAFX_ARTIFACT_GROUP_ID, javaFXModule.getArtifactName(),
+                                getVersion(), getPlatform().getClassifier()));
+            }
+        });
         lastUpdatedConfiguration = configuration;
     }
 
     private void clearJavaFXDependencies() {
+        if (customSDKArtifactRepository != null) {
+            project.getRepositories().remove(customSDKArtifactRepository);
+            customSDKArtifactRepository = null;
+        }
+
+        if (sdk != null && ! sdk.isEmpty()) {
+            Map<String, String> dirs = new HashMap<>();
+            dirs.put("name", "customSDKArtifactRepository");
+            if (sdk.endsWith(File.separator)) {
+                dirs.put("dirs", sdk + JAVAFX_SDK_LIB_FOLDER);
+            } else {
+                dirs.put("dirs", sdk + File.separator + JAVAFX_SDK_LIB_FOLDER);
+            }
+            customSDKArtifactRepository = project.getRepositories().flatDir(dirs);
+        }
+
         if (lastUpdatedConfiguration == null) {
             return;
         }
         var configuration = project.getConfigurations().findByName(lastUpdatedConfiguration);
         if (configuration != null) {
+            if (customSDKArtifactRepository != null) {
+                configuration.getDependencies()
+                        .removeIf(dependency -> dependency.getName().startsWith(PREFIX_MODULE));
+            }
             configuration.getDependencies()
                     .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
         }
