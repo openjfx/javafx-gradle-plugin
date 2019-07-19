@@ -123,7 +123,7 @@ Setting a valid path to the local JavaFX SDK will take precedence:
 **Groovy**
 
     javafx {
-        sdk = '/path/to/javafx-sdk/lib'
+        sdk = '/path/to/javafx-sdk'
         modules = [ 'javafx.controls', 'javafx.fxml' ]
     }
 

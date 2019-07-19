@@ -32,8 +32,7 @@ package org.openjfx.gradle;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.FlatDirectoryArtifactRepository;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +43,7 @@ import static org.openjfx.gradle.JavaFXModule.PREFIX_MODULE;
 public class JavaFXOptions {
 
     private static final String MAVEN_JAVAFX_ARTIFACT_GROUP_ID = "org.openjfx";
+    private static final String JAVAFX_SDK_LIB_FOLDER = "lib";
 
     private final Project project;
     private final JavaFXPlatform platform;
@@ -76,7 +76,7 @@ public class JavaFXOptions {
     /**
      * If set, the JavaFX modules will be taken from this local
      * repository, and not from Maven Central
-     * @param sdk, the path to the local JavaFX SDK/lib folder
+     * @param sdk, the path to the local JavaFX SDK folder
      */
     public void setSdk(String sdk) {
         this.sdk = sdk;
@@ -138,7 +138,11 @@ public class JavaFXOptions {
         if (sdk != null && ! sdk.isEmpty()) {
             Map<String, String> dirs = new HashMap<>();
             dirs.put("name", "sdkRepo");
-            dirs.put("dirs", sdk);
+            if (sdk.endsWith(File.separator)) {
+                dirs.put("dirs", sdk + JAVAFX_SDK_LIB_FOLDER);
+            } else {
+                dirs.put("dirs", sdk + File.separator + JAVAFX_SDK_LIB_FOLDER);
+            }
             sdkRepo = project.getRepositories().flatDir(dirs);
         }
 
