@@ -130,6 +130,6 @@ Setting a valid path to the local JavaFX SDK will take precedence:
 **Kotlin**
 
     javafx {
-        sdk = "/path/to/javafx-sdk-13-ea/lib"
+        sdk = "/path/to/javafx-sdk-13-ea"
         modules("javafx.controls", "javafx.fxml")
     }
