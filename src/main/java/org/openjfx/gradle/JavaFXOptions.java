@@ -53,7 +53,7 @@ public class JavaFXOptions {
     private String configuration = "implementation";
     private String lastUpdatedConfiguration;
     private List<String> modules = new ArrayList<>();
-    private FlatDirectoryArtifactRepository sdkRepo;
+    private FlatDirectoryArtifactRepository customSDKArtifactRepository;
 
     public JavaFXOptions(Project project) {
         this.project = project;
@@ -118,7 +118,7 @@ public class JavaFXOptions {
 
         String configuration = getConfiguration();
         JavaFXModule.getJavaFXModules(this.modules).forEach(javaFXModule -> {
-            if (sdkRepo != null) {
+            if (customSDKArtifactRepository != null) {
                 project.getDependencies().add(configuration, "name:" + javaFXModule.getModuleName());
             } else {
                 project.getDependencies().add(configuration,
@@ -130,20 +130,20 @@ public class JavaFXOptions {
     }
 
     private void clearJavaFXDependencies() {
-        if (sdkRepo != null) {
-            project.getRepositories().remove(sdkRepo);
-            sdkRepo = null;
+        if (customSDKArtifactRepository != null) {
+            project.getRepositories().remove(customSDKArtifactRepository);
+            customSDKArtifactRepository = null;
         }
 
         if (sdk != null && ! sdk.isEmpty()) {
             Map<String, String> dirs = new HashMap<>();
-            dirs.put("name", "sdkRepo");
+            dirs.put("name", "customSDKArtifactRepository");
             if (sdk.endsWith(File.separator)) {
                 dirs.put("dirs", sdk + JAVAFX_SDK_LIB_FOLDER);
             } else {
                 dirs.put("dirs", sdk + File.separator + JAVAFX_SDK_LIB_FOLDER);
             }
-            sdkRepo = project.getRepositories().flatDir(dirs);
+            customSDKArtifactRepository = project.getRepositories().flatDir(dirs);
         }
 
         if (lastUpdatedConfiguration == null) {
@@ -151,7 +151,7 @@ public class JavaFXOptions {
         }
         var configuration = project.getConfigurations().findByName(lastUpdatedConfiguration);
         if (configuration != null) {
-            if (sdkRepo != null) {
+            if (customSDKArtifactRepository != null) {
                 configuration.getDependencies()
                         .removeIf(dependency -> dependency.getName().startsWith(PREFIX_MODULE));
             }
