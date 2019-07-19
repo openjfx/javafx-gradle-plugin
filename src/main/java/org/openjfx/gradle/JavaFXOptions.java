@@ -119,7 +119,7 @@ public class JavaFXOptions {
         String configuration = getConfiguration();
         JavaFXModule.getJavaFXModules(this.modules).forEach(javaFXModule -> {
             if (customSDKArtifactRepository != null) {
-                project.getDependencies().add(configuration, "name:" + javaFXModule.getModuleName());
+                project.getDependencies().add(configuration, Map.of("name", javaFXModule.getModuleName()));
             } else {
                 project.getDependencies().add(configuration,
                         String.format("%s:%s:%s:%s", MAVEN_JAVAFX_ARTIFACT_GROUP_ID, javaFXModule.getArtifactName(),
