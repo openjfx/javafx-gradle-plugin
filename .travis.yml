@@ -34,7 +34,7 @@ deploy:
       
   # Deploy releases on every tag push
   - provider: script
-    script: ./gradlew publishPlugins -Pgradle.publish.key=$PUBLISH_KEY -Pgradle.publish.secret=$PUBLISH_SECRET
+    script: bash .ci/release.sh
     skip_cleanup: true
     on:
       tags: true
