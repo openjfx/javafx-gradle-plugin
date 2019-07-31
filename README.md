@@ -13,13 +13,13 @@ To use the plugin, apply the following two steps:
 **Groovy**
 
     plugins {
-        id 'org.openjfx.javafxplugin' version '0.0.7'
+        id 'org.openjfx.javafxplugin' version '0.0.8'
     }
 
 **Kotlin**
 
     plugins {
-        id("org.openjfx.javafxplugin") version "0.0.7"
+        id("org.openjfx.javafxplugin") version "0.0.8"
     }
 
 ##### Alternatively, you can use the `buildscript` DSL:
@@ -33,7 +33,7 @@ To use the plugin, apply the following two steps:
             }
         }
         dependencies {
-            classpath 'org.openjfx:javafx-plugin:0.0.7'
+            classpath 'org.openjfx:javafx-plugin:0.0.8'
         }
     }
     apply plugin: 'org.openjfx.javafxplugin'
@@ -47,7 +47,7 @@ To use the plugin, apply the following two steps:
             }
         }
         dependencies {
-            classpath("org.openjfx:javafx-plugin:0.0.7")
+            classpath("org.openjfx:javafx-plugin:0.0.8")
         }
     }
     apply(plugin = "org.openjfx.javafxplugin")
