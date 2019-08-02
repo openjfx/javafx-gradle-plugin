@@ -2,6 +2,10 @@
 
 Simplifies working with JavaFX 11+ for gradle projects.
 
+[![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/org/openjfx/javafxplugin/org.openjfx.javafxplugin.gradle.plugin/maven-metadata.xml.svg?label=Gradle%20Plugin)](https://plugins.gradle.org/plugin/org.openjfx.javafxplugin)
+[![Travis CI](https://api.travis-ci.com/openjfx/javafx-gradle-plugin.svg?branch=master)](https://travis-ci.com/openjfx/javafx-gradle-plugin)
+[![BSD-3 license](https://img.shields.io/badge/license-BSD--3-%230778B9.svg)](https://opensource.org/licenses/BSD-3-Clause)
+
 ## Getting started
 
 To use the plugin, apply the following two steps:
