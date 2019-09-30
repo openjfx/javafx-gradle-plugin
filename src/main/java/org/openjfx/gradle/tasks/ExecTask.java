@@ -35,7 +35,7 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
-import org.javamodularity.moduleplugin.tasks.ModuleOptions;
+import org.javamodularity.moduleplugin.extensions.RunModuleOptions;
 import org.openjfx.gradle.JavaFXModule;
 import org.openjfx.gradle.JavaFXOptions;
 import org.openjfx.gradle.JavaFXPlatform;
@@ -73,7 +73,7 @@ public class ExecTask extends DefaultTask {
 
             var definedJavaFXModuleNames = new TreeSet<>(javaFXOptions.getModules());
             if (!definedJavaFXModuleNames.isEmpty()) {
-                ModuleOptions moduleOptions = execTask.getExtensions().findByType(ModuleOptions.class);
+                RunModuleOptions moduleOptions = execTask.getExtensions().findByType(RunModuleOptions.class);
                 if (moduleOptions != null) {
                     definedJavaFXModuleNames.forEach(javaFXModule -> moduleOptions.getAddModules().add(javaFXModule));
                 } else {
