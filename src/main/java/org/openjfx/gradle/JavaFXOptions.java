@@ -53,6 +53,7 @@ public class JavaFXOptions {
     private String configuration = "implementation";
     private String lastUpdatedConfiguration;
     private List<String> modules = new ArrayList<>();
+    private List<String> options = new ArrayList<>();
     private FlatDirectoryArtifactRepository customSDKArtifactRepository;
 
     public JavaFXOptions(Project project) {
@@ -112,6 +113,19 @@ public class JavaFXOptions {
     public void modules(String...moduleNames) {
         setModules(List.of(moduleNames));
     }
+
+    public List<String> getOptions() {
+        return options;
+    }
+
+    /**
+     * A list of VM options passed to the executable
+     * @param options passed to the executable
+     */
+    public void setOptions(List<String> options) {
+        this.options = options;
+    }
+
 
     private void updateJavaFXDependencies() {
         clearJavaFXDependencies();
