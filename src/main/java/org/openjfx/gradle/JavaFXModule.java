@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Gluon
+ * Copyright (c) 2018, 2020, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,8 +76,15 @@ public enum JavaFXModule {
         return PREFIX_ARTIFACT + name().toLowerCase(Locale.ROOT);
     }
 
-    public String getPlatformJarFileName(String version, JavaFXPlatform platform) {
-        return getArtifactName() + "-" + version + "-" + platform.getClassifier() + ".jar";
+    public boolean compareToJarFile(JavaFXPlatform platform, String jarFileName) {
+        final String jarFileNameWithoutExtension = jarFileName.replace(".jar", "");
+        if (jarFileNameWithoutExtension.startsWith(getArtifactName())) {
+            final String[] parts = jarFileNameWithoutExtension.split("-");
+            if (parts.length > 3) {
+                return parts[parts.length - 1].equals(platform.getClassifier());
+            }
+        }
+        return false;
     }
 
     public static Set<JavaFXModule> getJavaFXModules(List<String> moduleNames) {

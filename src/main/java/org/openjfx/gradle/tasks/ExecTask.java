@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Gluon
+ * Copyright (c) 2019, 2020, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -79,7 +79,7 @@ public class ExecTask extends DefaultTask {
                 } else {
                     var javaFXModuleJvmArgs = List.of(
                             "--module-path", execTask.getClasspath()
-                                    .filter(jar -> isJavaFXJar(jar, javaFXOptions.getVersion(), javaFXOptions.getPlatform()))
+                                    .filter(jar -> isJavaFXJar(jar, javaFXOptions.getPlatform()))
                                     .getAsPath());
 
                     var jvmArgs = new ArrayList<String>();
@@ -101,10 +101,10 @@ public class ExecTask extends DefaultTask {
         }
     }
 
-    private static boolean isJavaFXJar(File jar, String version, JavaFXPlatform platform) {
+    private static boolean isJavaFXJar(File jar, JavaFXPlatform platform) {
         return jar.isFile() &&
                 Arrays.stream(JavaFXModule.values()).anyMatch(javaFXModule ->
-                        javaFXModule.getPlatformJarFileName(version, platform).equals(jar.getName()) ||
-                        javaFXModule.getModuleJarFileName().equals(jar.getName()));
+                    javaFXModule.compareToJarFile(platform, jar.getName()) ||
+                    javaFXModule.getModuleJarFileName().equals(jar.getName()));
     }
 }
