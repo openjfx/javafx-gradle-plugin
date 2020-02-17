@@ -104,7 +104,7 @@ public class ExecTask extends DefaultTask {
     private static boolean isJavaFXJar(File jar, JavaFXPlatform platform) {
         return jar.isFile() &&
                 Arrays.stream(JavaFXModule.values()).anyMatch(javaFXModule ->
-                    javaFXModule.compareToJarFile(platform, jar.getName()) ||
+                    javaFXModule.compareJarFileName(platform, jar.getName()) ||
                     javaFXModule.getModuleJarFileName().equals(jar.getName()));
     }
 }

@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,15 +77,9 @@ public enum JavaFXModule {
         return PREFIX_ARTIFACT + name().toLowerCase(Locale.ROOT);
     }
 
-    public boolean compareToJarFile(JavaFXPlatform platform, String jarFileName) {
-        final String jarFileNameWithoutExtension = jarFileName.replace(".jar", "");
-        if (jarFileNameWithoutExtension.startsWith(getArtifactName())) {
-            final String[] parts = jarFileNameWithoutExtension.split("-");
-            if (parts.length > 3) {
-                return parts[parts.length - 1].equals(platform.getClassifier());
-            }
-        }
-        return false;
+    public boolean compareJarFileName(JavaFXPlatform platform, String jarFileName) {
+        Pattern p = Pattern.compile(getArtifactName() + "-.+-" + platform.getClassifier() + "\\.jar");
+        return p.matcher(jarFileName).matches();
     }
 
     public static Set<JavaFXModule> getJavaFXModules(List<String> moduleNames) {
