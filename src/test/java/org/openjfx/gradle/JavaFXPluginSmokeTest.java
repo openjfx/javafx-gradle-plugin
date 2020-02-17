@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020, Gluon
+ * Copyright (c) 2018, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,13 +43,12 @@ class JavaFXPluginSmokeTest {
     void smokeTest() {
         var result = GradleRunner.create()
                 .withProjectDir(new File("test-project"))
-                .withGradleVersion("6.0.1")
+                .withGradleVersion("5.0")
                 .withArguments("clean", "build", "run", "--stacktrace")
                 .forwardOutput()
                 .build();
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":modular:run").getOutcome(), "Failed build!");
         assertEquals(TaskOutcome.SUCCESS, result.task(":non-modular:run").getOutcome(), "Failed build!");
-        assertEquals(TaskOutcome.SUCCESS, result.task(":transitive:run").getOutcome(), "Failed build!");
     }
 }
