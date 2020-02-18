@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Gluon
+ * Copyright (c) 2018, 2020, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -76,8 +77,9 @@ public enum JavaFXModule {
         return PREFIX_ARTIFACT + name().toLowerCase(Locale.ROOT);
     }
 
-    public String getPlatformJarFileName(String version, JavaFXPlatform platform) {
-        return getArtifactName() + "-" + version + "-" + platform.getClassifier() + ".jar";
+    public boolean compareJarFileName(JavaFXPlatform platform, String jarFileName) {
+        Pattern p = Pattern.compile(getArtifactName() + "-.+-" + platform.getClassifier() + "\\.jar");
+        return p.matcher(jarFileName).matches();
     }
 
     public static Set<JavaFXModule> getJavaFXModules(List<String> moduleNames) {
