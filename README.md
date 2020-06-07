@@ -72,6 +72,22 @@ Specify all the JavaFX modules that your project uses:
     javafx {
         modules("javafx.controls", "javafx.fxml")
     }
+
+#### 2.1 Specify additional JVM arguments (Optional)
+
+Optionally, if you need some additional JVM arguments (for example to set --add-opens), you can specify them this way:
+
+**Groovy**
+
+    javafx {
+        additionalJvmArgs = [ '--add-opens=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED' ]
+    }
+
+**Kotlin**
+
+    javafx {
+        additionalJvmArgs("--add-opens=javafx.graphics/com.sun.javafx.css=ALL-UNNAMED")
+    }
     
 ### 3. Specify JavaFX version
 

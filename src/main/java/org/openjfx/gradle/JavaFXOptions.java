@@ -53,7 +53,7 @@ public class JavaFXOptions {
     private String configuration = "implementation";
     private String lastUpdatedConfiguration;
     private List<String> modules = new ArrayList<>();
-    private List<String> options = new ArrayList<>();
+    private List<String> additionalJvmArgs = new ArrayList<>();
     private FlatDirectoryArtifactRepository customSDKArtifactRepository;
 
     public JavaFXOptions(Project project) {
@@ -114,16 +114,16 @@ public class JavaFXOptions {
         setModules(List.of(moduleNames));
     }
 
-    public List<String> getOptions() {
-        return options;
+    public List<String> getAdditionalJvmArgs() {
+        return additionalJvmArgs;
     }
 
     /**
-     * A list of VM options passed to the executable
-     * @param options passed to the executable
+     * A list of additional JVM args passed to the executable
+     * @param additionalJvmArgs passed to the executable
      */
-    public void setOptions(List<String> options) {
-        this.options = options;
+    public void setAdditionalJvmArgs(List<String> additionalJvmArgs) {
+        this.additionalJvmArgs = additionalJvmArgs;
     }
 
 

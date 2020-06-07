@@ -86,7 +86,7 @@ public class ExecTask extends DefaultTask {
 
                     jvmArgs.add("--add-modules");
                     jvmArgs.add(String.join(",", definedJavaFXModuleNames));
-                    jvmArgs.addAll(javaFXOptions.getOptions());
+                    jvmArgs.addAll(javaFXOptions.getAdditionalJvmArgs());
 
                     List<String> execJvmArgs = execTask.getJvmArgs();
                     if (execJvmArgs != null) {
