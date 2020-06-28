@@ -5,6 +5,13 @@
 # Update version by 1
 newVersion=${TRAVIS_TAG%.*}.$((${TRAVIS_TAG##*.} + 1))
 
+# Update README with the latest released version
+sed -i "0,/id 'org.openjfx.javafxplugin' version '.*'/s//id 'org.openjfx.javafxplugin' version '$TRAVIS_TAG'/" README.md
+sed -i "0,/id(\"org.openjfx.javafxplugin\") version \".*\"/s//id(\"org.openjfx.javafxplugin\") version \"$TRAVIS_TAG\"/" README.md
+sed -i "0,/'org.openjfx:javafx-plugin:.*'/s//'org.openjfx:javafx-plugin:$TRAVIS_TAG'/" README.md
+sed -i "0,/\"org.openjfx:javafx-plugin:.*\"/s//\"org.openjfx:javafx-plugin:$TRAVIS_TAG\"/" README.md
+git commit README.md -m "Use latest release v$TRAVIS_TAG in README"
+
 # Replace first occurrence of
 # version 'TRAVIS_TAG' 
 # with 
