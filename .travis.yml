@@ -22,7 +22,7 @@ before_script:
     - ./gradlew --version
 
 script:
-    - TERM=dumb ./gradlew --no-daemon build
+    - TERM=dumb ./gradlew build
 
 deploy:
   # Deploy snapshots on every commit made to master
