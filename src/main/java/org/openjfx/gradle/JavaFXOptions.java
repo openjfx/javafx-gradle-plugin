@@ -46,8 +46,8 @@ public class JavaFXOptions {
     private static final String JAVAFX_SDK_LIB_FOLDER = "lib";
 
     private final Project project;
-    private final JavaFXPlatform platform;
 
+    private JavaFXPlatform platform;
     private String version = "13";
     private String sdk;
     private String configuration = "implementation";
@@ -62,6 +62,24 @@ public class JavaFXOptions {
 
     public JavaFXPlatform getPlatform() {
         return platform;
+    }
+
+    public void setPlatform(String platform) {
+        switch (platform.toLowerCase()) {
+            case "win": {
+                this.platform = JavaFXPlatform.WINDOWS;
+                break;
+            }
+            case "osx": {
+                this.platform = JavaFXPlatform.OSX;
+                break;
+            }
+            case "linux": {
+                this.platform = JavaFXPlatform.LINUX;
+                break;
+            }
+        }
+        updateJavaFXDependencies();
     }
 
     public String getVersion() {
