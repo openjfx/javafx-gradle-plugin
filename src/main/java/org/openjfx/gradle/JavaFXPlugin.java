@@ -32,6 +32,8 @@ package org.openjfx.gradle;
 import com.google.gradle.osdetector.OsDetectorPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.util.VersionNumber;
 import org.javamodularity.moduleplugin.ModuleSystemPlugin;
 import org.openjfx.gradle.tasks.ExecTask;
 
@@ -40,7 +42,14 @@ public class JavaFXPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         project.getPlugins().apply(OsDetectorPlugin.class);
-        project.getPlugins().apply(ModuleSystemPlugin.class);
+
+        VersionNumber thisVersionNumber = VersionNumber.parse(project.getGradle().getGradleVersion());
+        VersionNumber lowestVersionNumberWithJavaFXSupport = VersionNumber.parse("6.4-rc-1");
+        if (thisVersionNumber.compareTo(lowestVersionNumberWithJavaFXSupport) < 0) {
+            project.getPlugins().apply(ModuleSystemPlugin.class);
+        } else {
+            project.getPlugins().apply(JavaPlugin.class);
+        }
 
         project.getExtensions().create("javafx", JavaFXOptions.class, project);
 

@@ -56,6 +56,19 @@ To use the plugin, apply the following two steps:
     }
     apply(plugin = "org.openjfx.javafxplugin")
 
+##### Gradle 6.4 and above
+
+Configure module path inference:
+
+**Groovy/Kotlin**
+
+    java {
+        modularity.inferModulePath.set(true)
+    }
+
+or alternatively apply the [gradle-modules-plugin](https://github.com/java9-modularity/gradle-modules-plugin) (applied automatically if using a Gradle version below 6.4).
+
+
 
 ### 2. Specify JavaFX modules
 
