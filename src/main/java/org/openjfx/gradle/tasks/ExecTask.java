@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2020, Gluon
+ * Copyright (c) 2019, 2021, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,9 @@ package org.openjfx.gradle.tasks;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
@@ -48,6 +51,8 @@ import java.util.List;
 import java.util.TreeSet;
 
 public class ExecTask extends DefaultTask {
+
+    private static final Logger LOGGER = Logging.getLogger(ExecTask.class);
 
     private final Project project;
     private JavaExec execTask;
@@ -74,13 +79,21 @@ public class ExecTask extends DefaultTask {
             var definedJavaFXModuleNames = new TreeSet<>(javaFXOptions.getModules());
             if (!definedJavaFXModuleNames.isEmpty()) {
                 RunModuleOptions moduleOptions = execTask.getExtensions().findByType(RunModuleOptions.class);
+
+                // BEGIN: Remove JavaFX empty jars from classpath
+                final FileCollection classpathWithoutJavaFXJars = execTask.getClasspath().filter(
+                        jar -> Arrays.stream(JavaFXModule.values()).noneMatch(javaFXModule -> jar.getName().contains(javaFXModule.getArtifactName()))
+                );
+                final FileCollection javaFXCPWithoutEmptyJars = execTask.getClasspath().filter(jar -> isJavaFXJar(jar, javaFXOptions.getPlatform()));
+                execTask.setClasspath(classpathWithoutJavaFXJars.plus(javaFXCPWithoutEmptyJars));
+                // END
+
                 if (moduleOptions != null) {
+                    LOGGER.info("Modular JavaFX application found");
                     definedJavaFXModuleNames.forEach(javaFXModule -> moduleOptions.getAddModules().add(javaFXModule));
                 } else {
-                    var javaFXModuleJvmArgs = List.of(
-                            "--module-path", execTask.getClasspath()
-                                    .filter(jar -> isJavaFXJar(jar, javaFXOptions.getPlatform()))
-                                    .getAsPath());
+                    LOGGER.info("Non-modular JavaFX application found");
+                    var javaFXModuleJvmArgs = List.of("--module-path", javaFXCPWithoutEmptyJars.getAsPath());
 
                     var jvmArgs = new ArrayList<String>();
 
