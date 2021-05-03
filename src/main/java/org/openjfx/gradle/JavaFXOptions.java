@@ -46,7 +46,7 @@ public class JavaFXOptions {
     private static final String JAVAFX_SDK_LIB_FOLDER = "lib";
 
     private final Project project;
-    private final JavaFXPlatform platform;
+    private JavaFXPlatform platform;
 
     private String version = "13";
     private String sdk;
@@ -62,6 +62,11 @@ public class JavaFXOptions {
 
     public JavaFXPlatform getPlatform() {
         return platform;
+    }
+
+    public void setPlatform (final JavaFXPlatform platform){
+        this.platform = platform;
+        updateJavaFXDependencies();
     }
 
     public String getVersion() {
