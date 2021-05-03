@@ -80,23 +80,24 @@ public class ExecTask extends DefaultTask {
             if (!definedJavaFXModuleNames.isEmpty()) {
                 RunModuleOptions moduleOptions = execTask.getExtensions().findByType(RunModuleOptions.class);
 
-                // BEGIN: Remove JavaFX empty jars from classpath
                 final FileCollection classpathWithoutJavaFXJars = execTask.getClasspath().filter(
                         jar -> Arrays.stream(JavaFXModule.values()).noneMatch(javaFXModule -> jar.getName().contains(javaFXModule.getArtifactName()))
                 );
-                final FileCollection javaFXCPWithoutEmptyJars = execTask.getClasspath().filter(jar -> isJavaFXJar(jar, javaFXOptions.getPlatform()));
-                execTask.setClasspath(classpathWithoutJavaFXJars.plus(javaFXCPWithoutEmptyJars));
-                // END
+                final FileCollection javaFXPlatformJars = execTask.getClasspath().filter(jar -> isJavaFXJar(jar, javaFXOptions.getPlatform()));
 
                 if (moduleOptions != null) {
                     LOGGER.info("Modular JavaFX application found");
+                    // Remove empty JavaFX jars from classpath
+                    execTask.setClasspath(classpathWithoutJavaFXJars.plus(javaFXPlatformJars));
                     definedJavaFXModuleNames.forEach(javaFXModule -> moduleOptions.getAddModules().add(javaFXModule));
                 } else {
                     LOGGER.info("Non-modular JavaFX application found");
-                    var javaFXModuleJvmArgs = List.of("--module-path", javaFXCPWithoutEmptyJars.getAsPath());
+                    // Remove all JavaFX jars from classpath
+                    execTask.setClasspath(classpathWithoutJavaFXJars);
+
+                    var javaFXModuleJvmArgs = List.of("--module-path", javaFXPlatformJars.getAsPath());
 
                     var jvmArgs = new ArrayList<String>();
-
                     jvmArgs.add("--add-modules");
                     jvmArgs.add(String.join(",", definedJavaFXModuleNames));
 
