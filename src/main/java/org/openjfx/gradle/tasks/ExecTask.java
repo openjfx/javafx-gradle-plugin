@@ -95,6 +95,9 @@ public class ExecTask extends DefaultTask {
                     LOGGER.info("Non-modular JavaFX application found");
                     var javaFXModuleJvmArgs = List.of("--module-path", javaFXCPWithoutEmptyJars.getAsPath());
 
+                    // Remove JavaFX jars from classpath
+                    execTask.setClasspath(classpathWithoutJavaFXJars);
+
                     var jvmArgs = new ArrayList<String>();
 
                     jvmArgs.add("--add-modules");
