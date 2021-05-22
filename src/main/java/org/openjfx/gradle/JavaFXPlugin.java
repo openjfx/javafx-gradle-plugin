@@ -33,7 +33,6 @@ import com.google.gradle.osdetector.OsDetectorPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.util.VersionNumber;
 import org.javamodularity.moduleplugin.ModuleSystemPlugin;
 import org.openjfx.gradle.tasks.ExecTask;
 
@@ -45,18 +44,13 @@ public class JavaFXPlugin implements Plugin<Project> {
 
         JavaFXOptions options = project.getExtensions().create("javafx", JavaFXOptions.class, project);
 
-        if (options.isAddModulesPlugin() || !isGradleVersionWithNativeModuleSupport(project)) {
-            project.getPlugins().apply(ModuleSystemPlugin.class);
-        } else {
+        if (options.isUseNativeModuleSupport()) {
             project.getPlugins().apply(JavaPlugin.class);
+        } else {
+            project.getPlugins().apply(ModuleSystemPlugin.class);
         }
 
         project.getTasks().create("configJavafxRun", ExecTask.class, project);
     }
 
-    private boolean isGradleVersionWithNativeModuleSupport(Project project) {
-        VersionNumber thisVersionNumber = VersionNumber.parse(project.getGradle().getGradleVersion());
-        VersionNumber lowestVersionNumberWithJavaFXSupport = VersionNumber.parse("6.4-rc-1");
-        return thisVersionNumber.compareTo(lowestVersionNumberWithJavaFXSupport) >= 0;
-    }
 }

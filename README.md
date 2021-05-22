@@ -146,7 +146,7 @@ module support instead, you can disable the modules plugin by specifying:
 **Groovy/Kotlin**
 
     javafx {
-        addModulesPlugin = false;
+        useNativeModuleSupport = true;
     }
 
 
@@ -159,7 +159,7 @@ module support:
         modularity.inferModulePath.set(true)
     }
 
-In Gradle versions below 6.4, setting the `addModulesPlugin` option to `false` 
+In Gradle versions below 6.4, setting the `useNativeModuleSupport` option to `true` 
 will have no effect.
 
 
