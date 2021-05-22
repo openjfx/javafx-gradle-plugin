@@ -91,7 +91,7 @@ public class ExecTask extends DefaultTask {
                     execTask.setClasspath(classpathWithoutJavaFXJars.plus(javaFXPlatformJars));
                     definedJavaFXModuleNames.forEach(javaFXModule -> moduleOptions.getAddModules().add(javaFXModule));
                 } else {
-                    LOGGER.info("Non-modular JavaFX application found");
+                    LOGGER.info("Non-modular JavaFX application found or plugin configured to use Gradle's native module support.");
                     // Remove all JavaFX jars from classpath
                     execTask.setClasspath(classpathWithoutJavaFXJars);
 
