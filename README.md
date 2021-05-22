@@ -56,20 +56,6 @@ To use the plugin, apply the following two steps:
     }
     apply(plugin = "org.openjfx.javafxplugin")
 
-##### Gradle 6.4 and above
-
-Configure module path inference:
-
-**Groovy/Kotlin**
-
-    java {
-        modularity.inferModulePath.set(true)
-    }
-
-or alternatively apply the [gradle-modules-plugin](https://github.com/java9-modularity/gradle-modules-plugin) (applied automatically if using a Gradle version below 6.4).
-
-
-
 ### 2. Specify JavaFX modules
 
 Specify all the JavaFX modules that your project uses:
@@ -150,3 +136,31 @@ Setting a valid path to the local JavaFX SDK will take precedence:
         sdk = "/path/to/javafx-sdk"
         modules("javafx.controls", "javafx.fxml")
     }
+
+### 6. Native module support (Gradle 7.0 and above)
+
+Since Gradle 7.0, Gradle has native support for Java modules. This plugin adds 
+the [gradle-modules-plugin](https://github.com/java9-modularity/gradle-modules-plugin) by default. If you would like to use Gradle's native 
+module support instead, you can disable the modules plugin by specifying:
+
+**Groovy/Kotlin**
+
+    javafx {
+        addModulesPlugin = false;
+    }
+
+
+Note that in Gradle versions 6.4 - 6.9, you have to explicitly enable native
+module support:
+
+**Groovy/Kotlin**
+
+    java {
+        modularity.inferModulePath.set(true)
+    }
+
+In Gradle versions below 6.4, setting the `addModulesPlugin` option to `false` 
+will have no effect.
+
+
+

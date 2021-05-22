@@ -43,16 +43,20 @@ public class JavaFXPlugin implements Plugin<Project> {
     public void apply(Project project) {
         project.getPlugins().apply(OsDetectorPlugin.class);
 
-        VersionNumber thisVersionNumber = VersionNumber.parse(project.getGradle().getGradleVersion());
-        VersionNumber lowestVersionNumberWithJavaFXSupport = VersionNumber.parse("6.4-rc-1");
-        if (thisVersionNumber.compareTo(lowestVersionNumberWithJavaFXSupport) < 0) {
+        JavaFXOptions options = project.getExtensions().create("javafx", JavaFXOptions.class, project);
+
+        if (options.isAddModulesPlugin() || !isGradleVersionWithNativeModuleSupport(project)) {
             project.getPlugins().apply(ModuleSystemPlugin.class);
         } else {
             project.getPlugins().apply(JavaPlugin.class);
         }
 
-        project.getExtensions().create("javafx", JavaFXOptions.class, project);
-
         project.getTasks().create("configJavafxRun", ExecTask.class, project);
+    }
+
+    private boolean isGradleVersionWithNativeModuleSupport(Project project) {
+        VersionNumber thisVersionNumber = VersionNumber.parse(project.getGradle().getGradleVersion());
+        VersionNumber lowestVersionNumberWithJavaFXSupport = VersionNumber.parse("6.4-rc-1");
+        return thisVersionNumber.compareTo(lowestVersionNumberWithJavaFXSupport) >= 0;
     }
 }

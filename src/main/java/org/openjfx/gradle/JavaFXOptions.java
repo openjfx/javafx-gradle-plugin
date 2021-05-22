@@ -54,6 +54,7 @@ public class JavaFXOptions {
     private String lastUpdatedConfiguration;
     private List<String> modules = new ArrayList<>();
     private FlatDirectoryArtifactRepository customSDKArtifactRepository;
+    private boolean addModulesPlugin = true;
 
     public JavaFXOptions(Project project) {
         this.project = project;
@@ -111,6 +112,14 @@ public class JavaFXOptions {
 
     public void modules(String...moduleNames) {
         setModules(List.of(moduleNames));
+    }
+
+    public boolean isAddModulesPlugin() {
+        return addModulesPlugin;
+    }
+
+    public void setAddModulesPlugin(boolean addModulesPlugin) {
+        this.addModulesPlugin = addModulesPlugin;
     }
 
     private void updateJavaFXDependencies() {
