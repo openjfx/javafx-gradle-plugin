@@ -90,12 +90,12 @@ public class ExecTask extends DefaultTask {
                     // Remove empty JavaFX jars from classpath
                     execTask.setClasspath(classpathWithoutJavaFXJars.plus(javaFXPlatformJars));
                     definedJavaFXModuleNames.forEach(javaFXModule -> moduleOptions.getAddModules().add(javaFXModule));
+                } else if (javaFXOptions.isUseNativeModuleSupport()) {
+                    LOGGER.info("Plugin configured to use native module support.");
+                    // Remove empty JavaFX jars from classpath
+                    execTask.setClasspath(classpathWithoutJavaFXJars.plus(javaFXPlatformJars));
                 } else {
-                    if (javaFXOptions.isUseNativeModuleSupport()) {
-                        LOGGER.info("Plugin configured to use native module support.");
-                    } else {
-                        LOGGER.info("Non-modular JavaFX application found");
-                    }
+                    LOGGER.info("Non-modular JavaFX application found");
                     // Remove all JavaFX jars from classpath
                     execTask.setClasspath(classpathWithoutJavaFXJars);
 
