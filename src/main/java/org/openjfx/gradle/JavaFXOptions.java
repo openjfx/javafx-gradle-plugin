@@ -31,6 +31,7 @@ package org.openjfx.gradle;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.FlatDirectoryArtifactRepository;
+import org.gradle.util.VersionNumber;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class JavaFXOptions {
     private String lastUpdatedConfiguration;
     private List<String> modules = new ArrayList<>();
     private FlatDirectoryArtifactRepository customSDKArtifactRepository;
+    private boolean useNativeModuleSupport = true;
 
     public JavaFXOptions(Project project) {
         this.project = project;
@@ -113,6 +115,14 @@ public class JavaFXOptions {
         setModules(List.of(moduleNames));
     }
 
+    public boolean isUseNativeModuleSupport() {
+        return useNativeModuleSupport && isGradleVersionWithNativeModuleSupport();
+    }
+
+    public void setUseNativeModuleSupport(boolean useNativeModuleSupport) {
+        this.useNativeModuleSupport = useNativeModuleSupport;
+    }
+
     private void updateJavaFXDependencies() {
         clearJavaFXDependencies();
 
@@ -158,5 +168,11 @@ public class JavaFXOptions {
             configuration.getDependencies()
                     .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
         }
+    }
+
+    private boolean isGradleVersionWithNativeModuleSupport() {
+        VersionNumber thisVersionNumber = VersionNumber.parse(project.getGradle().getGradleVersion());
+        VersionNumber lowestVersionNumberWithJavaFXSupport = VersionNumber.parse("6.4-rc-1");
+        return thisVersionNumber.compareTo(lowestVersionNumberWithJavaFXSupport) >= 0;
     }
 }

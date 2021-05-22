@@ -32,6 +32,7 @@ package org.openjfx.gradle;
 import com.google.gradle.osdetector.OsDetectorPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaPlugin;
 import org.javamodularity.moduleplugin.ModuleSystemPlugin;
 import org.openjfx.gradle.tasks.ExecTask;
 
@@ -40,10 +41,16 @@ public class JavaFXPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         project.getPlugins().apply(OsDetectorPlugin.class);
-        project.getPlugins().apply(ModuleSystemPlugin.class);
 
-        project.getExtensions().create("javafx", JavaFXOptions.class, project);
+        JavaFXOptions options = project.getExtensions().create("javafx", JavaFXOptions.class, project);
+
+        if (options.isUseNativeModuleSupport()) {
+            project.getPlugins().apply(JavaPlugin.class);
+        } else {
+            project.getPlugins().apply(ModuleSystemPlugin.class);
+        }
 
         project.getTasks().create("configJavafxRun", ExecTask.class, project);
     }
+
 }
