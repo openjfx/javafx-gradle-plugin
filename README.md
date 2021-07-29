@@ -137,3 +137,10 @@ Setting a valid path to the local JavaFX SDK will take precedence:
         sdk = "/path/to/javafx-sdk"
         modules("javafx.controls", "javafx.fxml")
     }
+    
+## Issues and Contributions ##
+
+Issues can be reported to the [Issue tracker](https://github.com/openjfx/javafx-gradle-plugin/issues/).
+
+Contributions can be submitted via [Pull requests](https://github.com/openjfx/javafx-gradle-plugin/pulls/), 
+providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://cla.gluonhq.com/).
