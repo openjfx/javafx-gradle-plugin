@@ -38,9 +38,10 @@ import java.util.stream.Collectors;
 
 public enum JavaFXPlatform {
 
-    LINUX("linux", "linux"),
-    WINDOWS("win", "windows"),
-    OSX("mac", "osx");
+    LINUX("linux", "linux-x86_64"),
+    WINDOWS("win", "windows-x86_64"),
+    OSX("mac", "osx-x86_64"),
+    OSX_ARM("mac-aarch64", "osx-aarch_64");
 
     private String classifier;
     private String osDetectorId;
@@ -56,7 +57,7 @@ public enum JavaFXPlatform {
 
     public static JavaFXPlatform detect(Project project) {
 
-        String os = project.getExtensions().getByType(OsDetector.class).getOs();
+        String os = project.getExtensions().getByType(OsDetector.class).getClassifier();
 
         for ( JavaFXPlatform platform: values()) {
             if ( platform.osDetectorId.equals(os)) {
