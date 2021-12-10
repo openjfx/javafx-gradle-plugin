@@ -58,10 +58,10 @@ public enum JavaFXPlatform {
 
     public static JavaFXPlatform detect(Project project) {
 
-        final String classifier = project.getExtensions().getByType(OsDetector.class).getClassifier();
+        final String osClassifier = project.getExtensions().getByType(OsDetector.class).getClassifier();
 
         for ( JavaFXPlatform platform: values()) {
-            if ( platform.osDetectorClassifier.equals(classifier)) {
+            if ( platform.osDetectorClassifier.equals(osClassifier)) {
                 return platform;
             }
         }
@@ -74,7 +74,7 @@ public enum JavaFXPlatform {
             String.format(
                     "Unsupported JavaFX platform found: '%s'! " +
                     "This plugin is designed to work on supported platforms only." +
-                    "Current supported platforms are %s.", classifier, supportedPlatforms )
+                    "Current supported platforms are %s.", osClassifier, supportedPlatforms )
         );
 
     }
