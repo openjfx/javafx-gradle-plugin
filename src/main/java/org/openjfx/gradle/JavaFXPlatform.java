@@ -39,16 +39,17 @@ import java.util.stream.Collectors;
 public enum JavaFXPlatform {
 
     LINUX("linux", "linux-x86_64"),
+    LINUX_AARCH64("linux-aarch64", "linux-aarch_64"),
     WINDOWS("win", "windows-x86_64"),
     OSX("mac", "osx-x86_64"),
-    OSX_ARM("mac-aarch64", "osx-aarch_64");
+    OSX_AARCH64("mac-aarch64", "osx-aarch_64");
 
-    private String classifier;
-    private String osDetectorId;
+    private final String classifier;
+    private final String osDetectorClassifier;
 
-    JavaFXPlatform( String classifier, String osDetectorId ) {
+    JavaFXPlatform( String classifier, String osDetectorClassifier ) {
         this.classifier = classifier;
-        this.osDetectorId = osDetectorId;
+        this.osDetectorClassifier = osDetectorClassifier;
     }
 
     public String getClassifier() {
@@ -57,23 +58,23 @@ public enum JavaFXPlatform {
 
     public static JavaFXPlatform detect(Project project) {
 
-        String os = project.getExtensions().getByType(OsDetector.class).getClassifier();
+        final String classifier = project.getExtensions().getByType(OsDetector.class).getClassifier();
 
         for ( JavaFXPlatform platform: values()) {
-            if ( platform.osDetectorId.equals(os)) {
+            if ( platform.osDetectorClassifier.equals(classifier)) {
                 return platform;
             }
         }
 
         String supportedPlatforms = Arrays.stream(values())
-                .map(p->p.osDetectorId)
+                .map(p->p.osDetectorClassifier)
                 .collect(Collectors.joining("', '", "'", "'"));
 
         throw new GradleException(
             String.format(
                     "Unsupported JavaFX platform found: '%s'! " +
                     "This plugin is designed to work on supported platforms only." +
-                    "Current supported platforms are %s.", os, supportedPlatforms )
+                    "Current supported platforms are %s.", classifier, supportedPlatforms )
         );
 
     }
