@@ -29,7 +29,7 @@ dependencies {
     implementation gradleApi()
 
     implementation 'com.google.gradle:osdetector-gradle-plugin:1.6.1'
-    implementation 'org.javamodularity:moduleplugin:1.8.2'
+    implementation 'org.javamodularity:moduleplugin:1.8.8'
 
     testImplementation gradleTestKit()
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
