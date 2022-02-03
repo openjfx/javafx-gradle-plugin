@@ -1,0 +1,16 @@
+name: Release
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: release-notes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.PAT }}
+          generate_release_notes: true
