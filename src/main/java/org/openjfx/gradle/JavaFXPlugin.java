@@ -34,6 +34,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.javamodularity.moduleplugin.ModuleSystemPlugin;
 import org.openjfx.gradle.tasks.ExecTask;
+import org.openjfx.gradle.tasks.StartScriptsTask;
 
 public class JavaFXPlugin implements Plugin<Project> {
 
@@ -45,5 +46,6 @@ public class JavaFXPlugin implements Plugin<Project> {
         project.getExtensions().create("javafx", JavaFXOptions.class, project);
 
         project.getTasks().create("configJavafxRun", ExecTask.class, project);
+        project.getTasks().create("configJavafxStartScripts", StartScriptsTask.class, project);
     }
 }

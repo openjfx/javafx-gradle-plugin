@@ -1,7 +1,6 @@
 plugins {
-    id 'com.gradle.build-scan' version '2.1'
     id 'java-gradle-plugin'
-    id 'com.github.hierynomus.license' version '0.15.0'
+    id 'com.github.hierynomus.license' version '0.16.1'
     id 'com.gradle.plugin-publish' version '0.12.0'
     id 'com.github.ben-manes.versions' version '0.20.0'
     id 'maven-publish'
@@ -37,7 +36,21 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
+    var os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem;
+
+    // At least in some cases this can mis-report arm-v8 and not arm.
+    var rawArch = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentArchitecture.displayName;
+    var normalizedArch = rawArch.toLowerCase()
+
+    if (os.isMacOsX() && (normalizedArch.contains("arm") || normalizedArch.contains("aarch"))) {
+        println("Detected M1")
+        useJUnitPlatform {
+            excludeTags "failsOnM1"
+        }
+    } else {
+        println("Not on M1")
+        useJUnitPlatform()
+    }
 }
 
 gradlePlugin {

@@ -1,0 +1,11 @@
+mainClassName = 'org.openjfx.gradle.javafx.test.Main'
+
+javafx {
+    version = '17.0.2'
+    modules = [ 'javafx.controls' ]
+}
+
+dependencies {
+    // has dependency on javafx-controls-11.0.2
+    implementation 'org.controlsfx:controlsfx:11.0.1'
+}

@@ -1,0 +1,5 @@
+rootProject.name = 'javafxplugintests'
+
+include 'modular'
+include 'non-modular'
+include 'transitive'

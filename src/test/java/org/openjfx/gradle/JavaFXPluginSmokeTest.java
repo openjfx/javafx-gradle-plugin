@@ -31,6 +31,7 @@ package org.openjfx.gradle;
 
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -40,10 +41,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class JavaFXPluginSmokeTest {
 
     @Test
+    @Tag("failsOnM1")
     void smokeTest() {
         var result = GradleRunner.create()
-                .withProjectDir(new File("test-project"))
+                .withProjectDir(new File("test-projects/gradle-6.0.1"))
                 .withGradleVersion("6.0.1")
+                .withArguments("clean", "build", "run", "--stacktrace")
+                .forwardOutput()
+                .build();
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":modular:run").getOutcome(), "Failed build!");
+        assertEquals(TaskOutcome.SUCCESS, result.task(":non-modular:run").getOutcome(), "Failed build!");
+        assertEquals(TaskOutcome.SUCCESS, result.task(":transitive:run").getOutcome(), "Failed build!");
+    }
+    @Test
+    void smokeTest7_4_2() {
+        var result = GradleRunner.create()
+                .withProjectDir(new File("test-projects/gradle-7.4.2"))
+                .withGradleVersion("7.4.2")
                 .withArguments("clean", "build", "run", "--stacktrace")
                 .forwardOutput()
                 .build();
