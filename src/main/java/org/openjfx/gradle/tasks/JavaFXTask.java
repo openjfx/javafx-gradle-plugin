@@ -221,7 +221,6 @@ public abstract class JavaFXTask extends DefaultTask {
      *
      * @param classpath FileCollection to set as classpath.
      */
-    @Internal
     public abstract void setTargetClasspath(final FileCollection classpath);
 
     /**
@@ -229,7 +228,6 @@ public abstract class JavaFXTask extends DefaultTask {
      *
      * @param jvmArgs List of Jvm arguments to set on target task.
      */
-    @Internal
     public abstract void setTargetJvmArgs(final List<String> jvmArgs);
 
     /**
