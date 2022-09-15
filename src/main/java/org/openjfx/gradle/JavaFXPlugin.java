@@ -45,5 +45,12 @@ public class JavaFXPlugin implements Plugin<Project> {
         project.getExtensions().create("javafx", JavaFXOptions.class, project);
 
         project.getTasks().create("configJavafxRun", ExecTask.class, project);
+
+        project.afterEvaluate(this::configureJavaLibs);
     }
+
+    private void configureJavaLibs(final Project project) {
+        project.getExtensions().configure(JavaFXOptions.class, javaFXOptions -> javaFXOptions.updateJavaFXDependencies());
+    }
+
 }

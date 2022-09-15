@@ -56,9 +56,10 @@ public enum JavaFXPlatform {
         return classifier;
     }
 
-    public static JavaFXPlatform detect(Project project) {
+    public static JavaFXPlatform detect(String forcedPlatform, Project project) {
 
-        final String osClassifier = project.getExtensions().getByType(OsDetector.class).getClassifier();
+        final String osClassifier = (forcedPlatform!=null && !"".equals(forcedPlatform)) ? forcedPlatform : 
+            project.getExtensions().getByType(OsDetector.class).getClassifier();
 
         for ( JavaFXPlatform platform: values()) {
             if ( platform.osDetectorClassifier.equals(osClassifier)) {

@@ -46,7 +46,7 @@ public class JavaFXOptions {
     private static final String JAVAFX_SDK_LIB_FOLDER = "lib";
 
     private final Project project;
-    private final JavaFXPlatform platform;
+    private JavaFXPlatform platform;
 
     private String version = "16";
     private String sdk;
@@ -57,11 +57,15 @@ public class JavaFXOptions {
 
     public JavaFXOptions(Project project) {
         this.project = project;
-        this.platform = JavaFXPlatform.detect(project);
+        this.platform = JavaFXPlatform.detect(null, project);
     }
 
     public JavaFXPlatform getPlatform() {
         return platform;
+    }
+
+    public void setForcedPlatform(String forcedPlatform) {
+        this.platform = JavaFXPlatform.detect(forcedPlatform, project);
     }
 
     public String getVersion() {
@@ -70,7 +74,6 @@ public class JavaFXOptions {
 
     public void setVersion(String version) {
         this.version = version;
-        updateJavaFXDependencies();
     }
 
     /**
@@ -80,7 +83,6 @@ public class JavaFXOptions {
      */
     public void setSdk(String sdk) {
         this.sdk = sdk;
-        updateJavaFXDependencies();
     }
 
     public String getSdk() {
@@ -93,7 +95,6 @@ public class JavaFXOptions {
      */
     public void setConfiguration(String configuration) {
         this.configuration = configuration;
-        updateJavaFXDependencies();
     }
 
     public String getConfiguration() {
@@ -106,14 +107,13 @@ public class JavaFXOptions {
 
     public void setModules(List<String> modules) {
         this.modules = modules;
-        updateJavaFXDependencies();
     }
 
     public void modules(String...moduleNames) {
         setModules(List.of(moduleNames));
     }
 
-    private void updateJavaFXDependencies() {
+    public void updateJavaFXDependencies() {
         clearJavaFXDependencies();
 
         String configuration = getConfiguration();
