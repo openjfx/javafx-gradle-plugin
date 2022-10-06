@@ -1,0 +1,6 @@
+mainClassName = 'org.openjfx.gradle.javafx.test.Main'
+
+javafx {
+    version = "18"
+    modules = [ 'javafx.controls', 'javafx.web' ]
+}

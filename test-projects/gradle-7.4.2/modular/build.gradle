@@ -1,0 +1,9 @@
+application {
+    mainClass = 'org.openjfx.gradle.javafx.test.Main'
+    mainModule = 'org.openjfx.gradle.javafx.test'
+}
+
+javafx {
+    version = '18'
+    modules = ['javafx.controls']
+}

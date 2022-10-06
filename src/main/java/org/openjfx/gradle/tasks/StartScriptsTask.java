@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2021, Gluon
+ * Copyright (c) 2018, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,40 +29,53 @@
  */
 package org.openjfx.gradle.tasks;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
+import org.gradle.api.plugins.ApplicationPlugin;
+import org.gradle.api.tasks.application.CreateStartScripts;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
-public class ExecTask extends JavaFXTask {
+public class StartScriptsTask extends JavaFXTask {
 
-    private static final Logger LOGGER = Logging.getLogger(ExecTask.class);
+    private CreateStartScripts startScripts;
 
     @Inject
-    public ExecTask(final Project project) {
+    public StartScriptsTask(Project project) {
         super(project);
+
+        project.getPluginManager().withPlugin(ApplicationPlugin.APPLICATION_PLUGIN_NAME, e -> {
+            startScripts = (CreateStartScripts) project.getTasks().findByName(ApplicationPlugin.TASK_START_SCRIPTS_NAME);
+            if (startScripts == null) {
+                throw new GradleException("StartScripts task not found.");
+            }
+
+            startScripts.dependsOn(this);
+        });
     }
 
     @Override
     public FileCollection getClasspath() {
-        return getExecTask().getClasspath();
+        return startScripts.getClasspath();
     }
 
     @Override
     public void setTargetClasspath(FileCollection classpath) {
-        getExecTask().setClasspath(classpath);
+        startScripts.setClasspath(classpath);
     }
 
     @Override
     public void setTargetJvmArgs(List<String> jvmArgs) {
-        getExecTask().setJvmArgs(jvmArgs);
+        startScripts.setDefaultJvmOpts(jvmArgs);
     }
 
     @Override
     public List<String> getTargetJvmArgs() {
-        return getExecTask().getJvmArgs();
+        final List<String> args = new ArrayList<>();
+        startScripts.getDefaultJvmOpts().forEach(args::add);
+        return args;
     }
 }
