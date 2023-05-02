@@ -88,13 +88,27 @@ public class JavaFXOptions {
     }
 
     /**
+     * Set the configuration name for dependencies, e.g.
+     * 'implementation', 'compileOnly' etc.
+     * @param configuration The configuration name for dependencies
+     */
+    @Deprecated
+    public void setConfiguration(String configuration) {
+        setConfigurations(new String[] { configuration });
+    }
+
+    /**
      * Set the configurations for dependencies, e.g.
      * 'implementation', 'compileOnly' etc.
-     * @param configurations The configuration name for dependencies
+     * @param configurations List of configuration names
      */
     public void setConfigurations(String[] configurations) {
         this.configurations = configurations;
         updateJavaFXDependencies();
+    }
+
+    public String getConfiguration() {
+        return configurations[0];
     }
 
     public String[] getConfigurations() {
@@ -118,7 +132,7 @@ public class JavaFXOptions {
         clearJavaFXDependencies();
 
         String[] configurations = getConfigurations();
-        for (String conf : this.configurations) {
+        for (String conf : configurations) {
             JavaFXModule.getJavaFXModules(this.modules).stream()
                     .sorted()
                     .forEach(javaFXModule -> {
