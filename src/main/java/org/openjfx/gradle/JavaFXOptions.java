@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Gluon
+ * Copyright (c) 2018, 2023, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ public class JavaFXOptions {
 
     private String version = "16";
     private String sdk;
-    private String[] configuration = new String[] { "implementation" };
+    private String[] configurations = new String[] { "implementation" };
     private String[] lastUpdatedConfigurations;
     private List<String> modules = new ArrayList<>();
     private FlatDirectoryArtifactRepository customSDKArtifactRepository;
@@ -87,31 +87,18 @@ public class JavaFXOptions {
         return sdk;
     }
 
-    /** Set the configuration name for dependencies, e.g.
-     * 'implementation', 'compileOnly' etc.
-     * @param configuration The configuration name for dependencies
-     */
-    public void setConfiguration(String configuration) {
-        this.configuration = new String[] { configuration };
-        updateJavaFXDependencies();
-    }
-
     /**
-     * Set the configurations    for dependencies, e.g.
+     * Set the configurations for dependencies, e.g.
      * 'implementation', 'compileOnly' etc.
      * @param configurations The configuration name for dependencies
      */
     public void setConfigurations(String[] configurations) {
-        this.configuration = configurations;
+        this.configurations = configurations;
         updateJavaFXDependencies();
     }
 
-    public String getConfiguration() {
-        return configuration[0];
-    }
-
     public String[] getConfigurations() {
-        return configuration;
+        return configurations;
     }
 
     public List<String> getModules() {
@@ -131,7 +118,7 @@ public class JavaFXOptions {
         clearJavaFXDependencies();
 
         String[] configurations = getConfigurations();
-        for (String conf : configuration) {
+        for (String conf : this.configurations) {
             JavaFXModule.getJavaFXModules(this.modules).stream()
                     .sorted()
                     .forEach(javaFXModule -> {
