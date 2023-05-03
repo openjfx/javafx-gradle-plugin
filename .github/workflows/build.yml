@@ -27,7 +27,7 @@ jobs:
           java-version: '11'
 
       - name: Build and verify project
-        run: ./gradlew clean build test
+        run: ./gradlew clean build
 
       - name: Publish Snapshots
         if: github.ref == 'refs/heads/master'
