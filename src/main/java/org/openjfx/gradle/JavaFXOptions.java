@@ -64,6 +64,16 @@ public class JavaFXOptions {
         return platform;
     }
 
+    /**
+     * Sets the target platform for the dependencies.
+     * @param platform platform classifier.
+     * Supported classifiers are linux, linux-aarch64, win/windows, osx/mac/macos or osx-aarch64/mac-aarch64/macos-aarch64.
+     */
+    public void setPlatform(String platform) {
+        this.platform = JavaFXPlatform.fromString(platform);
+        updateJavaFXDependencies();
+    }
+
     public String getVersion() {
         return version;
     }
@@ -180,10 +190,5 @@ public class JavaFXOptions {
                         .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
             }
         }
-    }
-
-    public void setPlatform(JavaFXPlatform platform) {
-        this.platform = platform;
-        updateJavaFXDependencies();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Gluon
+ * Copyright (c) 2018, 2023, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ public enum JavaFXPlatform {
     private final String classifier;
     private final String osDetectorClassifier;
 
-    JavaFXPlatform( String classifier, String osDetectorClassifier ) {
+    JavaFXPlatform(String classifier, String osDetectorClassifier) {
         this.classifier = classifier;
         this.osDetectorClassifier = osDetectorClassifier;
     }
@@ -60,14 +60,14 @@ public enum JavaFXPlatform {
 
         final String osClassifier = project.getExtensions().getByType(OsDetector.class).getClassifier();
 
-        for ( JavaFXPlatform platform: values()) {
-            if ( platform.osDetectorClassifier.equals(osClassifier)) {
+        for (JavaFXPlatform platform: values()) {
+            if (platform.osDetectorClassifier.equals(osClassifier)) {
                 return platform;
             }
         }
 
         String supportedPlatforms = Arrays.stream(values())
-                .map(p->p.osDetectorClassifier)
+                .map(p -> p.osDetectorClassifier)
                 .collect(Collectors.joining("', '", "'", "'"));
 
         throw new GradleException(
@@ -76,6 +76,26 @@ public enum JavaFXPlatform {
                     "This plugin is designed to work on supported platforms only." +
                     "Current supported platforms are %s.", osClassifier, supportedPlatforms )
         );
+    }
 
+    public static JavaFXPlatform fromString(String platform) {
+        switch (platform) {
+            case "linux":
+                return JavaFXPlatform.LINUX;
+            case "linux-aarch64":
+                return JavaFXPlatform.LINUX_AARCH64;
+            case "win":
+            case "windows":
+                return JavaFXPlatform.WINDOWS;
+            case "osx":
+            case "mac":
+            case "macos":
+                return JavaFXPlatform.OSX;
+            case "osx-aarch64":
+            case "mac-aarch64":
+            case "macos-aarch64":
+                return JavaFXPlatform.OSX_AARCH64;
+        }
+        return valueOf(platform);
     }
 }
