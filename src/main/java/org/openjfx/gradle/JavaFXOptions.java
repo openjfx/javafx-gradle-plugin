@@ -102,7 +102,6 @@ public class JavaFXOptions {
      * 'implementation', 'compileOnly' etc.
      * @param configuration The configuration name for dependencies
      */
-    @Deprecated
     public void setConfiguration(String configuration) {
         setConfigurations(new String[] { configuration });
     }
