@@ -28,7 +28,7 @@ repositories {
 dependencies {
     implementation gradleApi()
 
-    implementation 'com.google.gradle:osdetector-gradle-plugin:1.7.0'
+    implementation 'com.google.gradle:osdetector-gradle-plugin:1.7.3'
     implementation 'org.javamodularity:moduleplugin:1.8.12'
 
     testImplementation gradleTestKit()

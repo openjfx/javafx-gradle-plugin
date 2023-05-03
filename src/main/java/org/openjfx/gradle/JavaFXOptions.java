@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Gluon
+ * Copyright (c) 2018, 2023, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,12 +46,12 @@ public class JavaFXOptions {
     private static final String JAVAFX_SDK_LIB_FOLDER = "lib";
 
     private final Project project;
-    private final JavaFXPlatform platform;
+    private JavaFXPlatform platform;
 
-    private String version = "16";
+    private String version = "17";
     private String sdk;
-    private String configuration = "implementation";
-    private String lastUpdatedConfiguration;
+    private String[] configurations = new String[] { "implementation" };
+    private String[] lastUpdatedConfigurations;
     private List<String> modules = new ArrayList<>();
     private FlatDirectoryArtifactRepository customSDKArtifactRepository;
 
@@ -62,6 +62,16 @@ public class JavaFXOptions {
 
     public JavaFXPlatform getPlatform() {
         return platform;
+    }
+
+    /**
+     * Sets the target platform for the dependencies.
+     * @param platform platform classifier.
+     * Supported classifiers are linux, linux-aarch64, win/windows, osx/mac/macos or osx-aarch64/mac-aarch64/macos-aarch64.
+     */
+    public void setPlatform(String platform) {
+        this.platform = JavaFXPlatform.fromString(platform);
+        updateJavaFXDependencies();
     }
 
     public String getVersion() {
@@ -87,17 +97,31 @@ public class JavaFXOptions {
         return sdk;
     }
 
-    /** Set the configuration name for dependencies, e.g.
+    /**
+     * Set the configuration name for dependencies, e.g.
      * 'implementation', 'compileOnly' etc.
      * @param configuration The configuration name for dependencies
      */
     public void setConfiguration(String configuration) {
-        this.configuration = configuration;
+        setConfigurations(new String[] { configuration });
+    }
+
+    /**
+     * Set the configurations for dependencies, e.g.
+     * 'implementation', 'compileOnly' etc.
+     * @param configurations List of configuration names
+     */
+    public void setConfigurations(String[] configurations) {
+        this.configurations = configurations;
         updateJavaFXDependencies();
     }
 
     public String getConfiguration() {
-        return configuration;
+        return configurations[0];
+    }
+
+    public String[] getConfigurations() {
+        return configurations;
     }
 
     public List<String> getModules() {
@@ -116,19 +140,21 @@ public class JavaFXOptions {
     private void updateJavaFXDependencies() {
         clearJavaFXDependencies();
 
-        String configuration = getConfiguration();
-        JavaFXModule.getJavaFXModules(this.modules).stream()
-                .sorted()
-                .forEach(javaFXModule -> {
-                    if (customSDKArtifactRepository != null) {
-                        project.getDependencies().add(configuration, Map.of("name", javaFXModule.getModuleName()));
-                    } else {
-                        project.getDependencies().add(configuration,
-                                String.format("%s:%s:%s:%s", MAVEN_JAVAFX_ARTIFACT_GROUP_ID, javaFXModule.getArtifactName(),
-                                        getVersion(), getPlatform().getClassifier()));
-                    }
-                });
-        lastUpdatedConfiguration = configuration;
+        String[] configurations = getConfigurations();
+        for (String conf : configurations) {
+            JavaFXModule.getJavaFXModules(this.modules).stream()
+                    .sorted()
+                    .forEach(javaFXModule -> {
+                        if (customSDKArtifactRepository != null) {
+                            project.getDependencies().add(conf, Map.of("name", javaFXModule.getModuleName()));
+                        } else {
+                            project.getDependencies().add(conf,
+                                    String.format("%s:%s:%s:%s", MAVEN_JAVAFX_ARTIFACT_GROUP_ID, javaFXModule.getArtifactName(),
+                                            getVersion(), getPlatform().getClassifier()));
+                        }
+                    });
+        }
+        lastUpdatedConfigurations = configurations;
     }
 
     private void clearJavaFXDependencies() {
@@ -148,17 +174,20 @@ public class JavaFXOptions {
             customSDKArtifactRepository = project.getRepositories().flatDir(dirs);
         }
 
-        if (lastUpdatedConfiguration == null) {
+        if (lastUpdatedConfigurations == null) {
             return;
         }
-        var configuration = project.getConfigurations().findByName(lastUpdatedConfiguration);
-        if (configuration != null) {
-            if (customSDKArtifactRepository != null) {
+
+        for (String conf : lastUpdatedConfigurations) {
+            var configuration = project.getConfigurations().findByName(conf);
+            if (configuration != null) {
+                if (customSDKArtifactRepository != null) {
+                    configuration.getDependencies()
+                            .removeIf(dependency -> dependency.getName().startsWith(PREFIX_MODULE));
+                }
                 configuration.getDependencies()
-                        .removeIf(dependency -> dependency.getName().startsWith(PREFIX_MODULE));
+                        .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
             }
-            configuration.getDependencies()
-                    .removeIf(dependency -> MAVEN_JAVAFX_ARTIFACT_GROUP_ID.equals(dependency.getGroup()));
         }
     }
 }
