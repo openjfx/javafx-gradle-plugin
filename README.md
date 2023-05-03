@@ -82,7 +82,7 @@ This will make sure that all the modules belong to this specific version:
 
 <pre><code>
 javafx {
-    <b>version = '12'</b>
+    <b>version = '17'</b>
     modules = [ 'javafx.controls', 'javafx.fxml' ]
 }
 </code></pre>
@@ -91,7 +91,7 @@ javafx {
 
 <pre><code>
 javafx {
-    <b>version = "12"</b>
+    <b>version = "17"</b>
     modules("javafx.controls", "javafx.fxml")
 }
 </code></pre>
@@ -107,13 +107,12 @@ Supported targets are:
 * linux-aarch64
 * win or windows
 * osx or mac or macos
-* osx-aarch64 or mac-aarch64 or macos-aarch64
+* osx-aarch64 or mac-aarch64 or macos-aarch64 (support added in JavaFX 11.0.12 LTS and JavaFX 17 GA)
 
 **Groovy**
 
 <pre><code>
 javafx {
-    version = '12'
     modules = [ 'javafx.controls', 'javafx.fxml' ]
     <b>platform = 'mac'</b>
 }
@@ -123,7 +122,6 @@ javafx {
 
 <pre><code>
 javafx {
-    version = "12"
     modules("javafx.controls", "javafx.fxml")
     <b>platform = 'mac'</b>
 }
