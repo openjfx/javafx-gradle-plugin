@@ -80,41 +80,100 @@ This will make sure that all the modules belong to this specific version:
 
 **Groovy**
 
-    javafx {
-        version = '12'
-        modules = [ 'javafx.controls', 'javafx.fxml' ]
-    }
+<pre><code>
+javafx {
+    <b>version = '12'</b>
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+</code></pre>
 
 **Kotlin**
 
-    javafx {
-        version = "12"
-        modules("javafx.controls", "javafx.fxml")
-    }
+<pre><code>
+javafx {
+    <b>version = "12"</b>
+    modules("javafx.controls", "javafx.fxml")
+}
+</code></pre>
 
 ### 4. Cross-platform projects and libraries
 
-JavaFX modules require native binaries for each platform. The plugin only
-includes binaries for the platform running the build. By declaring the 
-dependency configuration **compileOnly**, the native binaries will not be 
-included. You will need to provide those separately during deployment for 
-each target platform.
+The plugin will include JavaFX dependencies for the current platform.
+However, a different target platform can also be specified.
+
+Supported targets are:
+
+* linux
+* linux-aarch64
+* win or windows
+* osx or mac or macos
+* osx-aarch64 or mac-aarch64 or macos-aarch64
 
 **Groovy**
 
-    javafx {
-        version = '12'
-        modules = [ 'javafx.controls', 'javafx.fxml' ]
-        configuration = 'compileOnly'
-    }
+<pre><code>
+javafx {
+    version = '12'
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+    <b>platform = 'mac'</b>
+}
+</code></pre>
 
 **Kotlin**
 
-    javafx {
-        version = "12"
-        modules("javafx.controls", "javafx.fxml")
-        configuration = "compileOnly"
-    }
+<pre><code>
+javafx {
+    version = "12"
+    modules("javafx.controls", "javafx.fxml")
+    <b>platform = 'mac'</b>
+}
+</code></pre>
+
+
+### 5. Dependency scope
+
+JavaFX application require native binaries for each platform to run.
+By default, the plugin will include these binaries for the target platform.
+Native dependencies can be avoided by declaring the dependency configuration as **compileOnly**.
+
+**Groovy**
+
+<pre><code>
+javafx {
+    modules = [ 'javafx.controls', 'javafx.fxml' ] 
+    <b>configuration = 'compileOnly'</b>
+}
+</code></pre>
+
+**Kotlin**
+
+<pre><code>
+javafx {
+    modules("javafx.controls", "javafx.fxml")
+    <b>configuration = "compileOnly"</b>
+}
+</code></pre>
+
+Multiple configurations can also be targeted by using `configurations`.
+For example, JavaFX dependencies can be added to both `implementation` and `testImplementation`.
+
+**Groovy**
+
+<pre><code>
+javafx {
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+    <b>configurations = [ 'implementation', 'testImplementation' ]</b>
+}
+</code></pre>
+
+**Kotlin**
+
+<pre><code>
+javafx {
+    modules("javafx.controls", "javafx.fxml")
+    <b>configurations("implementation", "testImplementation")</b>
+}
+</code></pre>
 
 ### 5. Using a local JavaFX SDK
 
@@ -126,17 +185,21 @@ Setting a valid path to the local JavaFX SDK will take precedence:
 
 **Groovy**
 
-    javafx {
-        sdk = '/path/to/javafx-sdk'
-        modules = [ 'javafx.controls', 'javafx.fxml' ]
-    }
+<pre><code>
+javafx {
+    <b>sdk = '/path/to/javafx-sdk'</b>
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+</code></pre>
 
 **Kotlin**
 
-    javafx {
-        sdk = "/path/to/javafx-sdk"
-        modules("javafx.controls", "javafx.fxml")
-    }
+<pre><code>
+javafx {
+    <b>sdk = "/path/to/javafx-sdk"</b>
+    modules("javafx.controls", "javafx.fxml")
+}
+</code></pre>
     
 ## Issues and Contributions ##
 
