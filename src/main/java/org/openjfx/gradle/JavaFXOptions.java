@@ -48,7 +48,7 @@ public class JavaFXOptions {
     private final Project project;
     private JavaFXPlatform platform;
 
-    private String version = "16";
+    private String version = "17";
     private String sdk;
     private String[] configurations = new String[] { "implementation" };
     private String[] lastUpdatedConfigurations;
