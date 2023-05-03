@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020, Gluon
+ * Copyright (c) 2018, 2023, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class JavaFXPluginSmokeTest {
 
     @Test
-    void smokeTest() {
+    void smokeTestModular() {
         var result = GradleRunner.create()
                 .withProjectDir(new File("test-project"))
                 .withGradleVersion("6.0.1")
@@ -49,7 +49,29 @@ class JavaFXPluginSmokeTest {
                 .build();
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":modular:run").getOutcome(), "Failed build!");
+    }
+
+    @Test
+    void smokeTestNonModular() {
+        var result = GradleRunner.create()
+                .withProjectDir(new File("test-project"))
+                .withGradleVersion("6.0.1")
+                .withArguments("clean", "build", "run", "--stacktrace")
+                .forwardOutput()
+                .build();
+
         assertEquals(TaskOutcome.SUCCESS, result.task(":non-modular:run").getOutcome(), "Failed build!");
+    }
+
+    @Test
+    void smokeTestTransitive() {
+        var result = GradleRunner.create()
+                .withProjectDir(new File("test-project"))
+                .withGradleVersion("6.0.1")
+                .withArguments("clean", "build", "run", "--stacktrace")
+                .forwardOutput()
+                .build();
+
         assertEquals(TaskOutcome.SUCCESS, result.task(":transitive:run").getOutcome(), "Failed build!");
     }
 }
