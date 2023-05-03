@@ -1,0 +1,40 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+      - master
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: oracle-actions/setup-java@v1
+        with:
+          website: jdk.java.net
+          release: 17
+
+      - name: Build and verify project
+        run: ./gradlew clean build test
+
+      - name: Publish Snapshots
+        if: github.ref == 'refs/heads/master'
+        run: |
+          # Find project version
+          ver=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
+          # deploy if snapshot found
+          if [[ $ver == *"SNAPSHOT"* ]]
+          then
+              ./gradlew publish -PsonatypeUsername=$SONATYPE_USERNAME -PsonatypePassword=$SONATYPE_PASSWORD
+          fi
+        shell: bash
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
