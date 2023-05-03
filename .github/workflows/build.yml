@@ -7,6 +7,12 @@ on:
   pull_request:
 
 jobs:
+  gradlevalidation:
+    name: "Validate Gradle Wrapper"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: gradle/wrapper-validation-action@v1
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -18,7 +24,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '11'
 
       - name: Build and verify project
         run: ./gradlew clean build test
