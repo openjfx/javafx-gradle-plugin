@@ -6,11 +6,54 @@ on:
 
 jobs:
   build:
-    name: release-notes
+    name: release
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Build and verify project
+        run: |
+          export DISPLAY=:90
+          Xvfb -ac :90 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          ./gradlew clean build -i
+
+      - name: Publish to Gradle plugin repository
+        id: deploy
+        if: github.ref == 'refs/heads/master'
+        run: |
+          ./gradlew publishPlugins -Pgradle.publish.key=$PUBLISH_KEY -Pgradle.publish.secret=$PUBLISH_SECRET
+        shell: bash
+        env:
+          PUBLISH_KEY: ${{ secrets.PUBLISH_KEY }}
+          PUBLISH_SECRET: ${{ secrets.PUBLISH_SECRET }}
+
+      - name: Commit next development version
+        if: steps.deploy.outputs.exit_code == 0
+        run: |
+          TAG=${GITHUB_REF/refs\/tags\//}
+          # Update README with the latest released version
+          sed -i "0,/id 'org.openjfx.javafxplugin' version '.*'/s//id 'org.openjfx.javafxplugin' version '$TAG'/" README.md
+          sed -i "0,/id(\"org.openjfx.javafxplugin\") version \".*\"/s//id(\"org.openjfx.javafxplugin\") version \"$TAG\"/" README.md
+          sed -i "0,/'org.openjfx:javafx-plugin:.*'/s//'org.openjfx:javafx-plugin:$TAG'/" README.md
+          sed -i "0,/\"org.openjfx:javafx-plugin:.*\"/s//\"org.openjfx:javafx-plugin:$TAG\"/" README.md
+          git commit README.md -m "Use latest release v$TAG in README"
+          # Update project version
+          newVersion=${TAG%.*}.$((${TAG##*.} + 1))
+          echo "Update project version to next snapshot version"
+          sed -i "0,/^version '$TAG'/s//version '$newVersion-SNAPSHOT'/" build.gradle
+          git commit build.gradle -m "Prepare development of $newVersion" --author "Github Bot <githubbot@gluonhq.com>"
+          git push https://gluon-bot:$PAT@github.com/openjfx/javafx-gradle-plugin HEAD:master
+        env:
+          PAT: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          token: ${{ secrets.PAT }}
           generate_release_notes: true

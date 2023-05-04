@@ -44,7 +44,7 @@ class JavaFXPluginSmokeTest {
         var result = GradleRunner.create()
                 .withProjectDir(new File("test-project"))
                 .withGradleVersion("6.0.1")
-                .withArguments("clean", "build", "run", "--stacktrace")
+                .withArguments("clean", "build", "run", "--stacktrace", "--refresh-dependencies")
                 .forwardOutput()
                 .build();
 
@@ -56,7 +56,7 @@ class JavaFXPluginSmokeTest {
         var result = GradleRunner.create()
                 .withProjectDir(new File("test-project"))
                 .withGradleVersion("6.0.1")
-                .withArguments("clean", "build", "run", "--stacktrace")
+                .withArguments("clean", "build", "run", "--stacktrace", "--refresh-dependencies")
                 .forwardOutput()
                 .build();
 
@@ -68,7 +68,7 @@ class JavaFXPluginSmokeTest {
         var result = GradleRunner.create()
                 .withProjectDir(new File("test-project"))
                 .withGradleVersion("6.0.1")
-                .withArguments("clean", "build", "run", "--stacktrace")
+                .withArguments("clean", "build", "run", "--stacktrace", "--refresh-dependencies")
                 .forwardOutput()
                 .build();
 
