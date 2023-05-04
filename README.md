@@ -3,7 +3,7 @@
 Simplifies working with JavaFX 11+ for gradle projects.
 
 [![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/org/openjfx/javafxplugin/org.openjfx.javafxplugin.gradle.plugin/maven-metadata.xml.svg?label=Gradle%20Plugin)](https://plugins.gradle.org/plugin/org.openjfx.javafxplugin)
-[![Travis CI](https://api.travis-ci.com/openjfx/javafx-gradle-plugin.svg?branch=master)](https://travis-ci.com/openjfx/javafx-gradle-plugin)
+![Github Actions](https://github.com/openjfx/javafx-gradle-plugin/actions/workflows/build.yml/badge.svg)
 [![BSD-3 license](https://img.shields.io/badge/license-BSD--3-%230778B9.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 ## Getting started
@@ -17,13 +17,13 @@ To use the plugin, apply the following two steps:
 **Groovy**
 
     plugins {
-        id 'org.openjfx.javafxplugin' version '0.0.13'
+        id 'org.openjfx.javafxplugin' version '0.0.14'
     }
 
 **Kotlin**
 
     plugins {
-        id("org.openjfx.javafxplugin") version "0.0.13"
+        id("org.openjfx.javafxplugin") version "0.0.14"
     }
 
 ##### Alternatively, you can use the `buildscript` DSL:
@@ -37,7 +37,7 @@ To use the plugin, apply the following two steps:
             }
         }
         dependencies {
-            classpath 'org.openjfx:javafx-plugin:0.0.13'
+            classpath 'org.openjfx:javafx-plugin:0.0.14'
         }
     }
     apply plugin: 'org.openjfx.javafxplugin'
@@ -51,7 +51,7 @@ To use the plugin, apply the following two steps:
             }
         }
         dependencies {
-            classpath("org.openjfx:javafx-plugin:0.0.13")
+            classpath("org.openjfx:javafx-plugin:0.0.14")
         }
     }
     apply(plugin = "org.openjfx.javafxplugin")
