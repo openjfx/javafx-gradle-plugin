@@ -27,7 +27,10 @@ jobs:
           java-version: '11'
 
       - name: Build and verify project
-        run: ./gradlew clean build -i
+        run: |
+          export DISPLAY=:90
+          Xvfb -ac :90 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+          ./gradlew clean build -i
 
       - name: Publish Snapshots
         if: github.ref == 'refs/heads/master'
