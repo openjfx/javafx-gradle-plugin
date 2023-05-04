@@ -22,7 +22,7 @@ jobs:
         run: |
           export DISPLAY=:90
           Xvfb -ac :90 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-          ./gradlew clean build
+          ./gradlew clean build -i
 
       - name: Publish to Gradle plugin repository
         id: deploy
