@@ -25,6 +25,19 @@ repositories {
     }
 }
 
+// Write the plugin's classpath to a file to share with the tests
+task createClasspathManifest {
+    def outputDir = file("$buildDir/$name")
+
+    inputs.files sourceSets.main.runtimeClasspath
+    outputs.dir outputDir
+
+    doLast {
+        outputDir.mkdirs()
+        file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n")
+    }
+}
+
 dependencies {
     implementation gradleApi()
 
@@ -34,6 +47,8 @@ dependencies {
     testImplementation gradleTestKit()
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
+    // Add the classpath file to the test runtime classpath
+    testRuntimeOnly files(createClasspathManifest)
 }
 
 test {
