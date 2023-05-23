@@ -31,47 +31,76 @@ package org.openjfx.gradle;
 
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JavaFXPluginSmokeTest {
+
+    private List<File> pluginClasspath;
+
+    @BeforeAll
+    public void setup() {
+        pluginClasspath = pluginClasspath();
+    }
 
     @Test
     void smokeTestModular() {
         var result = GradleRunner.create()
-                .withProjectDir(new File("test-project"))
+                .withProjectDir(new File("test-project/modular"))
                 .withGradleVersion("6.0.1")
                 .withArguments("clean", "build", "run", "--stacktrace", "--refresh-dependencies")
+                .withPluginClasspath(pluginClasspath)
                 .forwardOutput()
                 .build();
 
-        assertEquals(TaskOutcome.SUCCESS, result.task(":modular:run").getOutcome(), "Failed build!");
+        assertEquals(TaskOutcome.SUCCESS, result.task(":run").getOutcome(), "Failed build!");
     }
 
     @Test
     void smokeTestNonModular() {
         var result = GradleRunner.create()
-                .withProjectDir(new File("test-project"))
+                .withProjectDir(new File("test-project/non-modular"))
                 .withGradleVersion("6.0.1")
                 .withArguments("clean", "build", "run", "--stacktrace", "--refresh-dependencies")
+                .withPluginClasspath(pluginClasspath)
                 .forwardOutput()
                 .build();
 
-        assertEquals(TaskOutcome.SUCCESS, result.task(":non-modular:run").getOutcome(), "Failed build!");
+        assertEquals(TaskOutcome.SUCCESS, result.task(":run").getOutcome(), "Failed build!");
     }
 
     @Test
     void smokeTestTransitive() {
         var result = GradleRunner.create()
-                .withProjectDir(new File("test-project"))
+                .withProjectDir(new File("test-project/transitive"))
                 .withGradleVersion("6.0.1")
                 .withArguments("clean", "build", "run", "--stacktrace", "--refresh-dependencies")
+                .withPluginClasspath(pluginClasspath)
                 .forwardOutput()
                 .build();
 
-        assertEquals(TaskOutcome.SUCCESS, result.task(":transitive:run").getOutcome(), "Failed build!");
+        assertEquals(TaskOutcome.SUCCESS, result.task(":run").getOutcome(), "Failed build!");
+    }
+
+    private List<File> pluginClasspath() {
+        try {
+            var pluginClasspathResource = Objects.requireNonNull(getClass().getResource("../../../../createClasspathManifest/plugin-classpath.txt")).toURI();
+            return Files.readAllLines(Paths.get(pluginClasspathResource)).stream().map(File::new).collect(Collectors.toList());
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
