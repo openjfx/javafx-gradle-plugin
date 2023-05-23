@@ -31,7 +31,9 @@ package org.openjfx.gradle;
 
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +46,15 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JavaFXPluginSmokeTest {
+
+    private List<File> pluginClasspath;
+
+    @BeforeAll
+    public void setup() {
+        pluginClasspath = pluginClasspath();
+    }
 
     @Test
     void smokeTestModular() {
@@ -52,7 +62,7 @@ class JavaFXPluginSmokeTest {
                 .withProjectDir(new File("test-project/modular"))
                 .withGradleVersion("6.0.1")
                 .withArguments("clean", "build", "run", "--stacktrace", "--refresh-dependencies")
-                .withPluginClasspath(pluginClasspath())
+                .withPluginClasspath(pluginClasspath)
                 .forwardOutput()
                 .build();
 
@@ -65,7 +75,7 @@ class JavaFXPluginSmokeTest {
                 .withProjectDir(new File("test-project/non-modular"))
                 .withGradleVersion("6.0.1")
                 .withArguments("clean", "build", "run", "--stacktrace", "--refresh-dependencies")
-                .withPluginClasspath(pluginClasspath())
+                .withPluginClasspath(pluginClasspath)
                 .forwardOutput()
                 .build();
 
@@ -78,7 +88,7 @@ class JavaFXPluginSmokeTest {
                 .withProjectDir(new File("test-project/transitive"))
                 .withGradleVersion("6.0.1")
                 .withArguments("clean", "build", "run", "--stacktrace", "--refresh-dependencies")
-                .withPluginClasspath(pluginClasspath())
+                .withPluginClasspath(pluginClasspath)
                 .forwardOutput()
                 .build();
 
