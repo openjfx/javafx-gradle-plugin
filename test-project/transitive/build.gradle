@@ -1,4 +1,24 @@
-mainClassName = 'org.openjfx.gradle.javafx.test.Main'
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin'
+}
+
+repositories.mavenCentral {
+    metadataSources {
+        // Gradle Metadata is broken for 'eu.hansolo.fx:charts:17.1.41'. It's fixed in '17.1.51',
+        // but that version depends on JavaFX 20, and we want to stick with 17 for now in the test.
+        mavenPom()
+        ignoreGradleMetadataRedirection()
+    }
+}
+
+application {
+    if (gradleModuleSupport) {
+        mainClass = 'org.openjfx.gradle.javafx.test.Main'
+    } else {
+        mainClassName = 'org.openjfx.gradle.javafx.test.Main'
+    }
+}
 
 javafx {
     version = '17'
@@ -6,6 +26,6 @@ javafx {
 }
 
 dependencies {
-    // has dependency on javafx-controls-11.0.2
-    compile 'org.controlsfx:controlsfx:11.0.1'
+    // has runtime dependency on javafx-base-17.0.6, javafx-controls-17.0.6, javafx-graphics-17.0.6, javafx-swing-17.0.6
+    implementation 'eu.hansolo.fx:charts:17.1.41'
 }

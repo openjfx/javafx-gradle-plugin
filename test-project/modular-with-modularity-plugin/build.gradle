@@ -1,0 +1,22 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin'
+    id 'org.javamodularity.moduleplugin' version '1.8.12'
+}
+
+repositories.mavenCentral()
+
+if (gradleModuleSupport) java.modularity.inferModulePath = false
+
+application {
+    if (gradleModuleSupport) {
+        mainModule = 'org.openjfx.gradle.javafx.test'
+        mainClass = 'org.openjfx.gradle.javafx.test.Main'
+    } else {
+        mainClassName = 'org.openjfx.gradle.javafx.test.Main'
+    }
+}
+
+javafx {
+    modules = ['javafx.controls']
+}

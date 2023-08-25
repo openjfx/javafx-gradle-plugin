@@ -1,4 +1,18 @@
-mainClassName = 'org.openjfx.gradle.javafx.test.Main'
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.14'
+    id 'org.javamodularity.moduleplugin' version '1.8.12'
+}
+
+repositories.mavenCentral()
+
+application {
+    if (gradleModuleSupport) {
+        mainClass = 'org.openjfx.gradle.javafx.test.Main'
+    } else {
+        mainClassName = 'org.openjfx.gradle.javafx.test.Main'
+    }
+}
 
 javafx {
     modules = [ 'javafx.controls', 'javafx.web' ]
