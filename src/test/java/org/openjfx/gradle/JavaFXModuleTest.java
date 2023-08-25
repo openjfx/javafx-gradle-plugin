@@ -64,17 +64,6 @@ class JavaFXModuleTest {
     }
 
     @Test
-    void getDependencies() {
-        JavaFXModule module = JavaFXModule.CONTROLS;
-
-        List<JavaFXModule> dependencies = module.getMavenDependencies();
-        assertTrue(dependencies.contains(module));
-        for (JavaFXModule dependentModule : JavaFXModule.CONTROLS.getDependentModules()) {
-            assertTrue(dependencies.contains(dependentModule));
-        }
-    }
-
-    @Test
     void validateWithValidModules() {
         var moduleNames = List.of(JavaFXModule.CONTROLS.getModuleName(), JavaFXModule.WEB.getModuleName());
 

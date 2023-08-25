@@ -45,6 +45,6 @@ class JavaFXPluginSmokeTestGradle61 extends JavaFXPluginSmokeTest {
 
     @Disabled
     void smokeTestModular() {
-        // Support for build Java Modules was added in Gradle 6.4
+        // Support for building Java Modules was only added in Gradle 6.4
     }
 }

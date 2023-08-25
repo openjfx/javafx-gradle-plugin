@@ -130,6 +130,8 @@ abstract class JavaFXPluginSmokeTest {
     }
 
     private static List<List<String>> path(BuildResult result, String pathArg) {
+        // Parse classpath or module path from Gradle's '--debug' output.
+        // The :compileJava and :run tasks log them on that logging level.
         return result.getOutput().lines().filter(l -> l.contains(pathArg)).map(l -> {
             int pathArgIndex = l.indexOf(pathArg)  + pathArg.length();
             String pathString = l.substring(pathArgIndex, l.indexOf(" ", pathArgIndex));
