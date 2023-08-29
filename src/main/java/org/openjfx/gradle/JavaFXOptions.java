@@ -43,12 +43,12 @@ import org.gradle.nativeplatform.OperatingSystemFamily;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 abstract public class JavaFXOptions {
 
@@ -185,23 +185,29 @@ abstract public class JavaFXOptions {
         // This allows users to make multiple modifications to the 'configurations' list at arbitrary times during
         // build configuration.
         getConfigurationContainer().getByName(conf).withDependencies(dependencySet -> {
-           if (!List.of(configurations).contains(conf)) {
-               // configuration was removed: do nothing
-               return;
-           }
-            JavaFXModule.getJavaFXModules(this.modules).stream()
-                    .sorted()
-                    .forEach(javaFXModule -> {
-                        if (customSDKArtifactRepository != null) {
-                            dependencySet.add(getDependencies().create(Map.of("name", javaFXModule.getModuleName())));
-                        } else {
-                            dependencySet.add(getDependencies().create(
-                                    MAVEN_JAVAFX_ARTIFACT_GROUP_ID + ":"
-                                    + javaFXModule.getArtifactName() + ":"
-                                    + getVersion()
-                            ));
-                        }
-                    });
+            if (!List.of(configurations).contains(conf)) {
+                // configuration was removed: do nothing
+                return;
+            }
+
+            var javaFXModules = JavaFXModule.getJavaFXModules(this.modules);
+            if (customSDKArtifactRepository == null) {
+                javaFXModules.stream().sorted().forEach(javaFXModule -> dependencySet.add(getDependencies().create(
+                        MAVEN_JAVAFX_ARTIFACT_GROUP_ID + ":" + javaFXModule.getArtifactName() + ":" + getVersion()
+                )));
+            } else {
+                // Use the list of dependencies of each module to also add direct dependencies for those.
+                // This is needed, because there is no information about transitive dependencies in the metadata
+                // of the modules (as there is no such metadata in the local sdk).
+                var javaFXModulesWithTransitives = Stream.concat(
+                        javaFXModules.stream(),
+                        javaFXModules.stream().flatMap(m -> m.getDependentModules().stream())
+                ).distinct().sorted();
+
+                javaFXModulesWithTransitives.forEach(javaFXModule -> dependencySet.add(getDependencies().create(
+                        Map.of("name", javaFXModule.getModuleName())
+                )));
+            }
         });
     }
 

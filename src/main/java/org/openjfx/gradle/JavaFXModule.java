@@ -42,15 +42,21 @@ import java.util.stream.Stream;
 public enum JavaFXModule {
 
     BASE,
-    GRAPHICS,
-    CONTROLS,
-    FXML,
-    MEDIA,
-    SWING,
-    WEB;
+    GRAPHICS(BASE),
+    CONTROLS(BASE, GRAPHICS),
+    FXML(BASE, GRAPHICS),
+    MEDIA(BASE, GRAPHICS),
+    SWING(BASE, GRAPHICS),
+    WEB(BASE, CONTROLS, GRAPHICS, MEDIA);
 
     static final String PREFIX_MODULE = "javafx.";
     private static final String PREFIX_ARTIFACT = "javafx-";
+
+    private final List<JavaFXModule> dependentModules;
+
+    JavaFXModule(JavaFXModule...dependentModules) {
+        this.dependentModules = List.of(dependentModules);
+    }
 
     public static Optional<JavaFXModule> fromModuleName(String moduleName) {
         return Stream.of(JavaFXModule.values())
@@ -92,5 +98,9 @@ public enum JavaFXModule {
         if (! invalidModules.isEmpty()) {
             throw new GradleException("Found one or more invalid JavaFX module names: " + invalidModules);
         }
+    }
+
+    public List<JavaFXModule> getDependentModules() {
+        return dependentModules;
     }
 }

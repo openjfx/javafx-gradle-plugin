@@ -12,6 +12,6 @@ application {
 }
 
 javafx {
-    modules = ['javafx.controls', 'javafx.base', 'javafx.graphics']
+    modules = ['javafx.controls']
     sdk = "javafx-sdk-17.0.8"
 }
