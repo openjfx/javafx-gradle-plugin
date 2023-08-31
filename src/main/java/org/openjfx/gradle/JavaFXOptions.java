@@ -192,21 +192,27 @@ abstract public class JavaFXOptions {
 
             var javaFXModules = JavaFXModule.getJavaFXModules(this.modules);
             if (customSDKArtifactRepository == null) {
-                javaFXModules.stream().sorted().forEach(javaFXModule -> dependencySet.add(getDependencies().create(
-                        MAVEN_JAVAFX_ARTIFACT_GROUP_ID + ":" + javaFXModule.getArtifactName() + ":" + getVersion()
-                )));
+                javaFXModules.stream()
+                        .sorted()
+                        .forEach(javaFXModule ->
+                                dependencySet.add(getDependencies().create(
+                                        MAVEN_JAVAFX_ARTIFACT_GROUP_ID + ":" +
+                                                javaFXModule.getArtifactName() + ":" +
+                                                getVersion())));
             } else {
                 // Use the list of dependencies of each module to also add direct dependencies for those.
                 // This is needed, because there is no information about transitive dependencies in the metadata
                 // of the modules (as there is no such metadata in the local sdk).
                 var javaFXModulesWithTransitives = Stream.concat(
-                        javaFXModules.stream(),
-                        javaFXModules.stream().flatMap(m -> m.getDependentModules().stream())
-                ).distinct().sorted();
+                                javaFXModules.stream(),
+                                javaFXModules.stream()
+                                        .flatMap(m -> m.getDependentModules().stream()))
+                        .distinct()
+                        .sorted();
 
-                javaFXModulesWithTransitives.forEach(javaFXModule -> dependencySet.add(getDependencies().create(
-                        Map.of("name", javaFXModule.getModuleName())
-                )));
+                javaFXModulesWithTransitives.forEach(javaFXModule ->
+                        dependencySet.add(getDependencies().create(
+                                Map.of("name", javaFXModule.getModuleName()))));
             }
         });
     }
