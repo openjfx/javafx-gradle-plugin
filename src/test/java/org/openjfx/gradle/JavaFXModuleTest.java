@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Gluon
+ * Copyright (c) 2018, 2023, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,17 +61,6 @@ class JavaFXModuleTest {
     @Test
     void getArtifactName() {
         assertEquals("javafx-base", JavaFXModule.BASE.getArtifactName());
-    }
-
-    @Test
-    void getDependencies() {
-        JavaFXModule module = JavaFXModule.CONTROLS;
-
-        List<JavaFXModule> dependencies = module.getMavenDependencies();
-        assertTrue(dependencies.contains(module));
-        for (JavaFXModule dependentModule : JavaFXModule.CONTROLS.getDependentModules()) {
-            assertTrue(dependencies.contains(dependentModule));
-        }
     }
 
     @Test

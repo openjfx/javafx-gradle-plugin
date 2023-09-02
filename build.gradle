@@ -1,42 +1,30 @@
 plugins {
-    id 'com.gradle.build-scan' version '2.1'
-    id 'java-gradle-plugin'
-    id 'com.github.hierynomus.license' version '0.15.0'
-    id 'com.gradle.plugin-publish' version '0.12.0'
-    id 'com.github.ben-manes.versions' version '0.20.0'
-    id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '1.2.1'
+    id 'com.github.ben-manes.versions' version '0.47.0'
+    id 'com.github.hierynomus.license' version '0.16.1'
 }
 
-buildScan {
-    termsOfServiceUrl   = 'https://gradle.com/terms-of-service'
-    termsOfServiceAgree = 'yes'
+group = 'org.openjfx'
+version = '0.0.15-SNAPSHOT'
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(11)
 }
-
-group 'org.openjfx'
-version '0.0.15-SNAPSHOT'
-
-sourceCompatibility = 11
-targetCompatibility = 11
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://plugins.gradle.org/m2/"
-    }
+    gradlePluginPortal()
 }
 
 dependencies {
-    implementation gradleApi()
-
     implementation 'com.google.gradle:osdetector-gradle-plugin:1.7.3'
-    implementation 'org.javamodularity:moduleplugin:1.8.12'
 
-    testImplementation gradleTestKit()
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-test {
+tasks.named('test', Test) {
     useJUnitPlatform()
 }
 
@@ -47,34 +35,24 @@ gradlePlugin {
             displayName = 'JavaFX Gradle Plugin'
             description = 'Plugin that makes it easy to work with JavaFX'
             implementationClass = 'org.openjfx.gradle.JavaFXPlugin'
+            website = 'https://github.com/openjfx/javafx-gradle-plugin'
+            vcsUrl = 'https://github.com/openjfx/javafx-gradle-plugin'
+            tags.set(['java', 'javafx'])
         }
     }
-}
-
-pluginBundle {
-    website = 'https://github.com/openjfx/javafx-gradle-plugin'
-    vcsUrl = 'https://github.com/openjfx/javafx-gradle-plugin'
-    tags = [ 'java', 'javafx' ]
 }
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = project.group
-            artifactId = 'javafx-gradle-plugin'
-            version = project.version
-
-            from components.java
-        }
-    }
     repositories {
         maven {
-            if (project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword')) {
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+            def sonatypeUsername = providers.gradleProperty('sonatypeUsername')
+            def sonatypePassword = providers.gradleProperty('sonatypePassword')
+            if (sonatypeUsername.isPresent() && sonatypePassword.isPresent()) {
                 credentials {
-                    username project.property('sonatypeUsername')
-                    password project.property('sonatypePassword')
+                    username = sonatypeUsername.get()
+                    password = sonatypePassword.get()
                 }
-                url = "https://oss.sonatype.org/content/repositories/snapshots/"
             }
         }
     }

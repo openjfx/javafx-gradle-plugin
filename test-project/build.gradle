@@ -1,25 +1,12 @@
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
-    }
-    dependencies {
-        classpath "org.openjfx:javafx-plugin:0.0.+"
-    }
-}
+import org.gradle.util.GradleVersion
+
+ext.gradleModuleSupport = GradleVersion.current() >= GradleVersion.version("6.4")
 
 subprojects {
-    apply plugin: 'application'
-    apply plugin: 'org.openjfx.javafxplugin'
+    apply plugin: 'java'
 
-    sourceCompatibility = 11
-    targetCompatibility = 11
-
-    repositories {
-        mavenCentral()
+    java {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }

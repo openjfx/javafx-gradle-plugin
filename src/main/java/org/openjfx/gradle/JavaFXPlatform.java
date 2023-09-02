@@ -31,34 +31,47 @@ package org.openjfx.gradle;
 
 import com.google.gradle.osdetector.OsDetector;
 import org.gradle.api.GradleException;
-import org.gradle.api.Project;
+import org.gradle.nativeplatform.MachineArchitecture;
+import org.gradle.nativeplatform.OperatingSystemFamily;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public enum JavaFXPlatform {
 
-    LINUX("linux", "linux-x86_64"),
-    LINUX_AARCH64("linux-aarch64", "linux-aarch_64"),
-    WINDOWS("win", "windows-x86_64"),
-    OSX("mac", "osx-x86_64"),
-    OSX_AARCH64("mac-aarch64", "osx-aarch_64");
+    LINUX("linux", "linux-x86_64", OperatingSystemFamily.LINUX, MachineArchitecture.X86_64),
+    LINUX_AARCH64("linux-aarch64", "linux-aarch_64", OperatingSystemFamily.LINUX, MachineArchitecture.ARM64),
+    WINDOWS("win", "windows-x86_64", OperatingSystemFamily.WINDOWS, MachineArchitecture.X86_64),
+    OSX("mac", "osx-x86_64", OperatingSystemFamily.MACOS, MachineArchitecture.X86_64),
+    OSX_AARCH64("mac-aarch64", "osx-aarch_64", OperatingSystemFamily.MACOS, MachineArchitecture.ARM64);
 
     private final String classifier;
     private final String osDetectorClassifier;
+    private final String osFamily;
+    private final String arch;
 
-    JavaFXPlatform(String classifier, String osDetectorClassifier) {
+    JavaFXPlatform(String classifier, String osDetectorClassifier, String osFamily, String arch) {
         this.classifier = classifier;
         this.osDetectorClassifier = osDetectorClassifier;
+        this.osFamily = osFamily;
+        this.arch = arch;
     }
 
     public String getClassifier() {
         return classifier;
     }
 
-    public static JavaFXPlatform detect(Project project) {
+    public String getOsFamily() {
+        return osFamily;
+    }
 
-        final String osClassifier = project.getExtensions().getByType(OsDetector.class).getClassifier();
+    public String getArch() {
+        return arch;
+    }
+
+    public static JavaFXPlatform detect(OsDetector osDetector) {
+
+        final String osClassifier = osDetector.getClassifier();
 
         for (JavaFXPlatform platform: values()) {
             if (platform.osDetectorClassifier.equals(osClassifier)) {
