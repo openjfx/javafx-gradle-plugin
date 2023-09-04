@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'org.openjfx'
-version = '0.0.15-SNAPSHOT'
+version = '0.1.0-SNAPSHOT'
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(11)
