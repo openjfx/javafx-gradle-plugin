@@ -50,7 +50,7 @@ jobs:
           # Update project version
           newVersion=${TAG%.*}.$((${TAG##*.} + 1))
           echo "Update project version to next snapshot version"
-          sed -i "0,/^version '$TAG'/s//version '$newVersion-SNAPSHOT'/" build.gradle
+          sed -i "0,/^version = '$TAG'/s//version = '$newVersion-SNAPSHOT'/" build.gradle
           git commit build.gradle -m "Prepare development of $newVersion"
           git push https://github.com/openjfx/javafx-gradle-plugin HEAD:master
         env:
