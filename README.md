@@ -205,3 +205,10 @@ Issues can be reported to the [Issue tracker](https://github.com/openjfx/javafx-
 
 Contributions can be submitted via [Pull requests](https://github.com/openjfx/javafx-gradle-plugin/pulls/), 
 providing you have signed the [Gluon Individual Contributor License Agreement (CLA)](https://cla.gluonhq.com/).
+
+## Migrating from 0.0.14 to 0.1.0 ##
+
+Previously, on `0.0.14` and below there was an transitive dependency on `org.javamodularity.moduleplugin`.
+If your project stops working after updating to `0.1.0` or above, it's likely that you need to explicitly add
+the [org.javamodularity.moduleplugin](https://plugins.gradle.org/plugin/org.javamodularity.moduleplugin) back to your build to keep things working as they were.
+Note: There are other recommended alternatives over `org.javamodularity.moduleplugin` such as [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info).
