@@ -208,7 +208,45 @@ providing you have signed the [Gluon Individual Contributor License Agreement (C
 
 ## Migrating from 0.0.14 to 0.1.0 ##
 
-Previously, on `0.0.14` and below there was an transitive dependency on `org.javamodularity.moduleplugin`.
-If your project stops working after updating to `0.1.0` or above, it's likely that you need to explicitly add
-the [org.javamodularity.moduleplugin](https://plugins.gradle.org/plugin/org.javamodularity.moduleplugin) back to your build to keep things working as they were.
-Note: There are other recommended alternatives over `org.javamodularity.moduleplugin` such as [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info).
+Previously on `0.0.14` and below there was a transitive dependency on `org.javamodularity.moduleplugin`.
+If your **modular** project stops working after updating to `0.1.0` or above it is likely that you need to
+explicitly add the [org.javamodularity.moduleplugin](https://plugins.gradle.org/plugin/org.javamodularity.moduleplugin)
+back to your build and set `java.modularity.inferModulePath.set(false)` to keep things working as they were.
+
+Note: There are other recommended alternatives over `org.javamodularity.moduleplugin` for modular projects such as
+[extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info) that would allow you to keep
+`inferModulePath` set to **true** by declaring missing module information from legacy jars.
+
+**Groovy**
+
+````groovy
+plugins {
+    // ...
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+    id 'org.javamodularity.moduleplugin' version '1.8.12'
+}
+
+// ...
+
+java {
+    // ...
+    modularity.inferModulePath.set(false)
+}
+````
+
+**Kotlin**
+
+````kotlin
+plugins {
+    // ...
+    id("org.openjfx.javafxplugin") version "0.1.0"
+    id("org.javamodularity.moduleplugin") version "1.8.12"
+}
+
+// ...
+
+java {
+    // ...
+    modularity.inferModulePath.set(false)
+}
+````
