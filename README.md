@@ -208,7 +208,14 @@ providing you have signed the [Gluon Individual Contributor License Agreement (C
 
 ## Migrating from 0.0.14 to 0.1.0
 
-Previously on `0.0.14` and below there was a transitive dependency on `org.javamodularity.moduleplugin`.
+The previous version rewrote the whole classpath/module path and removed the "wrong" transitive Jars. This is no
+longer the case. If you have problems with mixed JavaFX jars (e.g. `javafx-base-linux`, `java-base-mac`) during
+`assemble` task or see errors like `Error initializing QuantumRenderer: no suitable pipeline found` it is likely
+one or more of your dependencies may have published metadata that includes JavaFX dependencies with classifiers.
+The ideal solution is to reach out to library authors to update their JavaFX plugin and publish a patch with fixed
+metadata. A fallback solution to this is to `exclude group: 'org.openjfx'` on the dependencies causing the issue.
+
+Additionally on `0.0.14` and below there was a transitive dependency on `org.javamodularity.moduleplugin`.
 If your **modular** project stops working after updating to `0.1.0` or above it is likely that you need to
 explicitly add the [org.javamodularity.moduleplugin](https://plugins.gradle.org/plugin/org.javamodularity.moduleplugin)
 back to your build and set `java.modularity.inferModulePath.set(false)` to keep things working as they were.
