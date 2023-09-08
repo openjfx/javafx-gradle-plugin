@@ -209,16 +209,45 @@ providing you have signed the [Gluon Individual Contributor License Agreement (C
 ## Migrating from 0.0.14 to 0.1.0
 
 The previous version rewrote the whole classpath/module path and removed the "wrong" transitive Jars. This is no
-longer the case. If you have problems with mixed JavaFX jars (e.g. `javafx-base-linux`, `java-base-mac`) during
-`assemble` task or see errors like `Error initializing QuantumRenderer: no suitable pipeline found` it is likely
-one or more of your dependencies may have published metadata that includes JavaFX dependencies with classifiers.
-The ideal solution is to reach out to library authors to update their JavaFX plugin and publish a patch with fixed
-metadata. A fallback solution to this is to `exclude group: 'org.openjfx'` on the dependencies causing the issue.
+longer the case. As a result, there's a couple possible situations that may occur that are described below.
+
+If you have problems with mixed JavaFX jars (e.g. `javafx-base-linux`, `java-base-mac`) during `assemble` task
+or see errors like `Error initializing QuantumRenderer: no suitable pipeline found` it is likely one or more
+of your dependencies may have published metadata that includes JavaFX dependencies with classifiers. The ideal
+solution is to reach out to library authors to update their JavaFX plugin and publish a patch with fixed metadata.
+A fallback solution to this is to `exclude group: 'org.openjfx'` on the dependencies causing the issue.
+
+If you see errors such as `Cannot choose between the following variants of org.openjfx...` it is possible that
+your build or another plugin is interacting with the classpath/module path in a way that "breaks" functionality
+provided by this plugin. In such cases, you may need to re-declare the variants yourself as described in
+[Gradle docs on attribute matching/variants](https://docs.gradle.org/current/userguide/variant_attributes.html)
+or reach out to the plugin author in an attempt to remediate the situation. Below is an example where
+`org.unbroken-dome.xjc` plugin was doing exactly this and two approaches that can be taken to resolve it.
+
+```groovy
+// Approach 1: Explicit Variant
+configurations.xjcCatalogResolution  {
+    attributes {
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+        attribute(OperatingSystemFamily.OPERATING_SYSTEM_ATTRIBUTE, objects.named(OperatingSystemFamily, "linux"))
+        attribute(MachineArchitecture.ARCHITECTURE_ATTRIBUTE, objects.named(MachineArchitecture, "x86-64"))
+    }
+}
+
+// Approach 2: Copy existing configuration over to xjcCatalogResolution
+configurations.xjcCatalogResolution  {
+    def rtCpAttributes = configurations.runtimeClasspath.attributes
+    rtCpAttributes.keySet().each { key ->
+        attributes.attribute(key, rtCpAttributes.getAttribute(key))
+    }
+}
+```
 
 Additionally on `0.0.14` and below there was a transitive dependency on `org.javamodularity.moduleplugin`.
 If your **modular** project stops working after updating to `0.1.0` or above it is likely that you need to
 explicitly add the [org.javamodularity.moduleplugin](https://plugins.gradle.org/plugin/org.javamodularity.moduleplugin)
 back to your build and set `java.modularity.inferModulePath.set(false)` to keep things working as they were.
+This change is not required for non-modular projects.
 
 Note: There are other recommended alternatives over `org.javamodularity.moduleplugin` for modular projects such as
 [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info) that would allow you to keep
