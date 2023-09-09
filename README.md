@@ -208,14 +208,25 @@ providing you have signed the [Gluon Individual Contributor License Agreement (C
 
 ## Migrating from 0.0.14 to 0.1.0
 
-The previous version rewrote the whole classpath/module path and removed the "wrong" transitive Jars. This is no
-longer the case. As a result, there's a couple possible situations that may occur that are described below.
+Version `0.1.0` had a couple number of changes and improvements such as lazy dependency declaration,
+variant-aware dependency management, and support for Gradle's built-in JPMS functionality. In addition,
+the previous version used to rewrite the classpath/module path. This is no longer the case to minimize
+making changes to your build and as a result your past builds may be potentially affected when you upgrade
+the plugin. On the next section there's a couple of troubleshooting steps that may help with the transition
+if you encounter issues when upgrading. These examples are provided in a best-effort basis, but feel free to
+open an issue if you think there's a migration scenario that's not captured here that should be included.
 
-If you have problems with mixed JavaFX jars (e.g. `javafx-base-linux`, `java-base-mac`) during `assemble` task
-or see errors like `Error initializing QuantumRenderer: no suitable pipeline found` it is likely one or more
+### Troubleshooting
+
+#### Mixed JavaFX jars
+
+If you see mixed JavaFX jars (e.g. `javafx-base-x.y.z-linux.jar`, `java-base-x.y.z-mac.jar`) during `assemble`
+task or see errors like `Error initializing QuantumRenderer: no suitable pipeline found` it is likely one or more
 of your dependencies may have published metadata that includes JavaFX dependencies with classifiers. The ideal
 solution is to reach out to library authors to update their JavaFX plugin and publish a patch with fixed metadata.
 A fallback solution to this is to `exclude group: 'org.openjfx'` on the dependencies causing the issue.
+
+#### Variants
 
 If you see errors such as `Cannot choose between the following variants of org.openjfx...` it is possible that
 your build or another plugin is interacting with the classpath/module path in a way that "breaks" functionality
@@ -243,46 +254,36 @@ configurations.xjcCatalogResolution  {
 }
 ```
 
-Additionally on `0.0.14` and below there was a transitive dependency on `org.javamodularity.moduleplugin`.
+#### Extra plugins
+
+On `0.0.14` and below there was a transitive dependency on `org.javamodularity.moduleplugin`.
 If your **modular** project stops working after updating to `0.1.0` or above it is likely that you need to
 explicitly add the [org.javamodularity.moduleplugin](https://plugins.gradle.org/plugin/org.javamodularity.moduleplugin)
 back to your build and set `java.modularity.inferModulePath.set(false)` to keep things working as they were.
-This change is not required for non-modular projects.
+This change should not be required for non-modular projects.
 
-Note: There are other recommended alternatives over `org.javamodularity.moduleplugin` for modular projects such as
+**Note**: There are other recommended alternatives over `org.javamodularity.moduleplugin` for modular projects such as
 [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info) that would allow you to keep
-`inferModulePath` set to **true** by declaring missing module information from legacy jars.
+`inferModulePath` set to **true** by declaring missing module information from legacy jars. More details on how to
+accomplish can be found on the plugin's source code repository.
 
-**Groovy**
+**Before**
 
 ````groovy
 plugins {
-    // ...
+    id 'org.openjfx.javafxplugin' version '0.0.14'
+}
+````
+
+**After**
+
+````groovy
+plugins {
     id 'org.openjfx.javafxplugin' version '0.1.0'
     id 'org.javamodularity.moduleplugin' version '1.8.12'
 }
 
-// ...
-
 java {
-    // ...
-    modularity.inferModulePath.set(false)
-}
-````
-
-**Kotlin**
-
-````kotlin
-plugins {
-    // ...
-    id("org.openjfx.javafxplugin") version "0.1.0"
-    id("org.javamodularity.moduleplugin") version "1.8.12"
-}
-
-// ...
-
-java {
-    // ...
     modularity.inferModulePath.set(false)
 }
 ````
