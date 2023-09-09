@@ -218,13 +218,25 @@ open an issue if you think there's a migration scenario that's not captured here
 
 ### Troubleshooting
 
+#### Gradle version
+
+The plugin now requires Gradle 6.1 and above. Consider updating your Gradle settings, wrapper, and build to
+a more modern Gradle version along with plugins and dependencies to minimize issues with the plugin.
+
 #### Mixed JavaFX jars
 
-If you see mixed JavaFX jars (e.g. `javafx-base-x.y.z-linux.jar`, `java-base-x.y.z-mac.jar`) during `assemble`
-task or see errors like `Error initializing QuantumRenderer: no suitable pipeline found` it is likely one or more
-of your dependencies may have published metadata that includes JavaFX dependencies with classifiers. The ideal
-solution is to reach out to library authors to update their JavaFX plugin and publish a patch with fixed metadata.
-A fallback solution to this is to `exclude group: 'org.openjfx'` on the dependencies causing the issue.
+If you see mixed JavaFX jars (e.g. `javafx-base-x.y.z-linux.jar`, `java-base-x.y.z-mac.jar`) during `build`, `test`,
+`assemble` or other tasks or see errors like `Error initializing QuantumRenderer: no suitable pipeline found` it
+is likely one or more of your dependencies may have published metadata that includes JavaFX dependencies with
+classifiers. The ideal solution is to reach out to library authors to update their JavaFX plugin and publish a
+patch with fixed metadata. A fallback solution to this is to `exclude group: 'org.openjfx'` on the dependencies
+causing the issue.
+
+```groovy
+implementation('com.example.fx:foo:1.0.0') {
+    exclude group: 'org.openjfx', module: '*'
+}
+```
 
 #### Variants
 
@@ -232,12 +244,12 @@ If you see errors such as `Cannot choose between the following variants of org.o
 your build or another plugin is interacting with the classpath/module path in a way that "breaks" functionality
 provided by this plugin. In such cases, you may need to re-declare the variants yourself as described in
 [Gradle docs on attribute matching/variants](https://docs.gradle.org/current/userguide/variant_attributes.html)
-or reach out to the plugin author in an attempt to remediate the situation. Below is an example where
-`org.unbroken-dome.xjc` plugin was doing exactly this and two approaches that can be taken to resolve it.
+or reach out to the plugin author in an attempt to remediate the situation.
 
 ```groovy
 // Approach 1: Explicit Variant
-configurations.xjcCatalogResolution  {
+// The following snippet will let you add attributes for linux and x86_64 to a configuration
+configurations.someConfiguration {
     attributes {
         attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
         attribute(OperatingSystemFamily.OPERATING_SYSTEM_ATTRIBUTE, objects.named(OperatingSystemFamily, "linux"))
@@ -245,11 +257,11 @@ configurations.xjcCatalogResolution  {
     }
 }
 
-// Approach 2: Copy existing configuration over to xjcCatalogResolution
-configurations.xjcCatalogResolution  {
-    def rtCpAttributes = configurations.runtimeClasspath.attributes
-    rtCpAttributes.keySet().each { key ->
-        attributes.attribute(key, rtCpAttributes.getAttribute(key))
+// Approach 2: Copy existing configuration into another configuration
+configurations.someConfiguration  {
+    def runtimeAttributes = configurations.runtimeClasspath.attributes
+    runtimeAttributes.keySet().each { key ->
+        attributes.attribute(key, runtimeAttributes.getAttribute(key))
     }
 }
 ```
@@ -260,7 +272,8 @@ On `0.0.14` and below there was a transitive dependency on `org.javamodularity.m
 If your **modular** project stops working after updating to `0.1.0` or above it is likely that you need to
 explicitly add the [org.javamodularity.moduleplugin](https://plugins.gradle.org/plugin/org.javamodularity.moduleplugin)
 back to your build and set `java.modularity.inferModulePath.set(false)` to keep things working as they were.
-This change should not be required for non-modular projects.
+This plugin helped with transitive dependencies on legacy jars that haven't been modularized yet, but now you
+have to option choose which approach to take. This change should not be required for non-modular projects.
 
 **Before**
 
