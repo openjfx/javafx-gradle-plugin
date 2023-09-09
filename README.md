@@ -262,11 +262,6 @@ explicitly add the [org.javamodularity.moduleplugin](https://plugins.gradle.org/
 back to your build and set `java.modularity.inferModulePath.set(false)` to keep things working as they were.
 This change should not be required for non-modular projects.
 
-**Note**: There are other recommended alternatives over `org.javamodularity.moduleplugin` for modular projects such as
-[extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info) that would allow you to keep
-`inferModulePath` set to **true** by declaring missing module information from legacy jars. More details on how to
-accomplish can be found on the plugin's source code repository.
-
 **Before**
 
 ````groovy
@@ -287,3 +282,8 @@ java {
     modularity.inferModulePath.set(false)
 }
 ````
+
+**Note**: There are other recommended alternatives over `org.javamodularity.moduleplugin` for modular projects such as
+[extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info) that would allow you to keep
+`inferModulePath` set to **true** by declaring missing module information from legacy jars. More details on how to
+accomplish can be found on the plugin's source code repository.
