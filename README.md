@@ -208,28 +208,29 @@ providing you have signed the [Gluon Individual Contributor License Agreement (C
 
 ## Migrating from 0.0.14 to 0.1.0
 
-Version `0.1.0` had a couple number of changes and improvements such as lazy dependency declaration,
-variant-aware dependency management, and support for Gradle's built-in JPMS functionality. In addition,
-the previous version used to rewrite the classpath/module path. This is no longer the case to minimize
-making changes to your build and as a result your past builds may be potentially affected when you upgrade
-the plugin. On the next section there's a couple of troubleshooting steps that may help with the transition
-if you encounter issues when upgrading. These examples are provided in a best-effort basis, but feel free to
-open an issue if you think there's a migration scenario that's not captured here that should be included.
+Version `0.1.0` introduced several changes and improvements, including lazy dependency declaration,
+variant-aware dependency management, and support for Gradle's built-in JPMS functionality. In the
+previous version, the classpath/module path was rewritten. This is no longer the case. As a result,
+your past builds might be affected when you upgrade the plugin. In the next section, there are a few
+troubleshooting steps that might help with the transition if you encounter issues when upgrading.
+These examples are provided on a best-effort basis, but feel free to open an issue if you believe
+there's a migration scenario not covered here that should be included.
 
 ### Troubleshooting
 
 #### Gradle version
 
-The plugin now requires Gradle 6.1 and above. Consider updating your Gradle settings, wrapper, and build to
-a more modern Gradle version along with plugins and dependencies to minimize issues with the plugin.
+The plugin now requires `Gradle 6.1` or higher. Consider updating your Gradle settings, wrapper,
+and build to a more recent version of Gradle. Additionally, updating your plugins and dependencies
+can help minimize issues with the plugin.
 
 #### Mixed JavaFX jars
 
-If you see mixed JavaFX jars (e.g. `javafx-base-x.y.z-linux.jar`, `java-base-x.y.z-mac.jar`) during `build`, `test`,
-`assemble` or other tasks or see errors like `Error initializing QuantumRenderer: no suitable pipeline found` it
-is likely one or more of your dependencies may have published metadata that includes JavaFX dependencies with
-classifiers. The ideal solution is to reach out to library authors to update their JavaFX plugin and publish a
-patch with fixed metadata. A fallback solution to this is to `exclude group: 'org.openjfx'` on the dependencies
+If you encounter mixed classified JavaFX jars or see errors like `Error initializing QuantumRenderer: no
+suitable pipeline found` during executing task like `build`, `test`, `assemble`, etc., it is likely one
+or more of your dependencies have published metadata that includes JavaFX dependencies with classifiers.
+The ideal solution is to reach out to library authors to update their JavaFX plugin and publish a patch
+with fixed metadata. A fallback solution to this is to `exclude group: 'org.openjfx'` on the dependencies
 causing the issue.
 
 ```groovy
@@ -240,11 +241,11 @@ implementation('com.example.fx:foo:1.0.0') {
 
 #### Variants
 
-If you see errors such as `Cannot choose between the following variants of org.openjfx...` it is possible that
-your build or another plugin is interacting with the classpath/module path in a way that "breaks" functionality
-provided by this plugin. In such cases, you may need to re-declare the variants yourself as described in
-[Gradle docs on attribute matching/variants](https://docs.gradle.org/current/userguide/variant_attributes.html)
-or reach out to the plugin author in an attempt to remediate the situation.
+If you encounter errors such as `Cannot choose between the following variants of org.openjfx...` it is possible
+that your build or another plugin is interacting with the classpath/module path in a way that "breaks" functionality
+provided by this plugin. In such cases, you may need to re-declare the variants yourself as described in [Gradle docs
+on attribute matching/variants](https://docs.gradle.org/current/userguide/variant_attributes.html) or reach out to
+the plugin author in an attempt to remediate the situation.
 
 ```groovy
 // Approach 1: Explicit Variant
@@ -268,8 +269,8 @@ configurations.someConfiguration  {
 
 #### Extra plugins
 
-On `0.0.14` and below there was a transitive dependency on `org.javamodularity.moduleplugin`.
-If your **modular** project stops working after updating to `0.1.0` or above it is likely that you need to
+In versions `0.0.14` and below, there was a transitive dependency on `org.javamodularity.moduleplugin`.
+If your **modular** project stops working after updating to `0.1.0` or above, it is likely that you need to
 explicitly add the [org.javamodularity.moduleplugin](https://plugins.gradle.org/plugin/org.javamodularity.moduleplugin)
 back to your build and set `java.modularity.inferModulePath.set(false)` to keep things working as they were.
 This plugin helped with transitive dependencies on legacy jars that haven't been modularized yet, but now you
