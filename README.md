@@ -301,3 +301,29 @@ java {
 [extra-java-module-info](https://github.com/gradlex-org/extra-java-module-info) that would allow you to keep
 `inferModulePath` set to **true** by declaring missing module information from legacy jars. More details on how to
 accomplish can be found on the plugin's source code repository.
+
+#### Dependency hierarchy
+
+Version `1.0.0` now relies on JavaFX modules defining their transitive modules rather than flattening them.
+This change allows you to publish metadata declaring only the JavaFX modules you need, meaning it does not
+include transitive JavaFX modules as part of your published metadata.
+
+Some plugins rely on having all modules (transitive included) declared as "top-level" modules such as the
+`badass-runtime-plugin` on **non-modular** projects. In this particular case, it is necessary to declare
+all modules to restore previous functionality from `0.0.14` and below.
+
+**Before**
+
+````groovy
+javafx {
+    modules = ['javafx.controls']
+}
+````
+
+**After**
+
+````groovy
+javafx {
+    modules = ['javafx.base', 'javafx.graphics', 'javafx.controls']
+}
+````
