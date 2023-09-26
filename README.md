@@ -304,7 +304,7 @@ accomplish can be found on the plugin's source code repository.
 
 #### Dependency hierarchy
 
-Version `1.0.0` now relies on JavaFX modules defining their transitive modules rather than flattening them.
+Version `0.1.0` now relies on JavaFX modules defining their transitive modules rather than flattening them.
 This change allows you to publish metadata declaring only the JavaFX modules you need, meaning it does not
 include transitive JavaFX modules as part of your published metadata.
 
