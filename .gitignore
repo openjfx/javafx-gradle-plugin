@@ -3,3 +3,4 @@
 build/
 *.iml
 out/
+/test-project/gradle.properties

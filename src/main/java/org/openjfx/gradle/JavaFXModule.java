@@ -31,6 +31,7 @@ package org.openjfx.gradle;
 
 import org.gradle.api.GradleException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -55,7 +56,7 @@ public enum JavaFXModule {
     private final List<JavaFXModule> dependentModules;
 
     JavaFXModule(JavaFXModule...dependentModules) {
-        this.dependentModules = List.of(dependentModules);
+        this.dependentModules = Arrays.asList(dependentModules);
     }
 
     public static Optional<JavaFXModule> fromModuleName(String moduleName) {
@@ -86,13 +87,14 @@ public enum JavaFXModule {
 
         return moduleNames.stream()
                 .map(JavaFXModule::fromModuleName)
-                .flatMap(Optional::stream)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toSet());
     }
 
     public static void validateModules(List<String> moduleNames) {
-        var invalidModules = moduleNames.stream()
-                .filter(module -> JavaFXModule.fromModuleName(module).isEmpty())
+        List<String> invalidModules = moduleNames.stream()
+                .filter(module -> !JavaFXModule.fromModuleName(module).isPresent())
                 .collect(Collectors.toList());
 
         if (! invalidModules.isEmpty()) {

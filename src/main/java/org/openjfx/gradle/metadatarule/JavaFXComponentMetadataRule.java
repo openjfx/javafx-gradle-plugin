@@ -56,7 +56,7 @@ abstract public class JavaFXComponentMetadataRule implements ComponentMetadataRu
 
     @Override
     public void execute(ComponentMetadataContext context) {
-        var details = context.getDetails();
+        ComponentMetadataDetails details = context.getDetails();
 
         for (JavaFXPlatform javaFXPlatform : JavaFXPlatform.values()) {
             addJavaFXPlatformVariant(javaFXPlatform, details, "Compile", "compile");
@@ -65,8 +65,8 @@ abstract public class JavaFXComponentMetadataRule implements ComponentMetadataRu
     }
 
     private void addJavaFXPlatformVariant(JavaFXPlatform javaFXPlatform, ComponentMetadataDetails details, String nameSuffix, String baseVariant) {
-        var name = details.getId().getName();
-        var version = details.getId().getVersion();
+        String name = details.getId().getName();
+        String version = details.getId().getVersion();
 
         // Use 'maybeAddVariant'. As long as the metadata is sourced from POM, 'compile' and 'runtime' exist.
         // These are used as base for the additional variants so that those variants have the same dependencies.
