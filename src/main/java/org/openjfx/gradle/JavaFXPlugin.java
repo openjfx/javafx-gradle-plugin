@@ -45,7 +45,6 @@ import org.openjfx.gradle.metadatarule.JavaFXComponentMetadataRule;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.openjfx.gradle.JavaFXOptions.MAVEN_JAVAFX_ARTIFACT_GROUP_ID;
 
@@ -111,9 +110,9 @@ public class JavaFXPlugin implements Plugin<Project> {
         FileCollection classpath = execTask.getClasspath();
 
         execTask.setClasspath(classpath.filter(jar -> !isJavaFXJar(jar, javaFXOptions.getPlatform())));
-        var modulePath = classpath.filter(jar -> isJavaFXJar(jar, javaFXOptions.getPlatform()));
+        FileCollection modulePath = classpath.filter(jar -> isJavaFXJar(jar, javaFXOptions.getPlatform()));
 
-        execTask.getJvmArgumentProviders().add(() -> List.of(
+        execTask.getJvmArgumentProviders().add(() -> Arrays.asList(
                 "--module-path", modulePath.getAsPath(),
                 "--add-modules", String.join(",", javaFXOptions.getModules())
         ));

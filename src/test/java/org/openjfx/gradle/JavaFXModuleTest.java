@@ -32,10 +32,12 @@ package org.openjfx.gradle;
 import org.gradle.api.GradleException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -50,7 +52,7 @@ class JavaFXModuleTest {
 
     @Test
     void nonExistingModuleName() {
-        assertTrue(JavaFXModule.fromModuleName("javafx.unknown").isEmpty());
+        assertFalse(JavaFXModule.fromModuleName("javafx.unknown").isPresent());
     }
 
     @Test
@@ -65,14 +67,14 @@ class JavaFXModuleTest {
 
     @Test
     void validateWithValidModules() {
-        var moduleNames = List.of(JavaFXModule.CONTROLS.getModuleName(), JavaFXModule.WEB.getModuleName());
+        List<String> moduleNames = Arrays.asList(JavaFXModule.CONTROLS.getModuleName(), JavaFXModule.WEB.getModuleName());
 
         JavaFXModule.validateModules(moduleNames);
     }
 
     @Test
     void validateWithInvalidModules() {
-        var moduleNames = List.of("javafx.unknown", JavaFXModule.CONTROLS.getModuleName(), JavaFXModule.WEB.getModuleName());
+        List<String> moduleNames = Arrays.asList("javafx.unknown", JavaFXModule.CONTROLS.getModuleName(), JavaFXModule.WEB.getModuleName());
 
         try {
             JavaFXModule.validateModules(moduleNames);

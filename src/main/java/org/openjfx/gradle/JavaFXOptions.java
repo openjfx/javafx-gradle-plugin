@@ -43,6 +43,7 @@ import org.gradle.nativeplatform.OperatingSystemFamily;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -177,7 +178,7 @@ abstract public class JavaFXOptions {
     }
 
     public void modules(String...moduleNames) {
-        setModules(List.of(moduleNames));
+        setModules(Arrays.asList(moduleNames));
     }
 
     private void declareFXDependencies(String conf) {
@@ -185,12 +186,12 @@ abstract public class JavaFXOptions {
         // This allows users to make multiple modifications to the 'configurations' list at arbitrary times during
         // build configuration.
         getConfigurationContainer().getByName(conf).withDependencies(dependencySet -> {
-            if (!List.of(configurations).contains(conf)) {
+            if (!Arrays.asList(configurations).contains(conf)) {
                 // configuration was removed: do nothing
                 return;
             }
 
-            var javaFXModules = JavaFXModule.getJavaFXModules(this.modules);
+            Set<JavaFXModule> javaFXModules = JavaFXModule.getJavaFXModules(this.modules);
             if (customSDKArtifactRepository == null) {
                 javaFXModules.stream()
                         .sorted()
@@ -203,16 +204,18 @@ abstract public class JavaFXOptions {
                 // Use the list of dependencies of each module to also add direct dependencies for those.
                 // This is needed, because there is no information about transitive dependencies in the metadata
                 // of the modules (as there is no such metadata in the local sdk).
-                var javaFXModulesWithTransitives = Stream.concat(
+                Stream<JavaFXModule> javaFXModulesWithTransitives = Stream.concat(
                                 javaFXModules.stream(),
                                 javaFXModules.stream()
                                         .flatMap(m -> m.getDependentModules().stream()))
                         .distinct()
                         .sorted();
 
-                javaFXModulesWithTransitives.forEach(javaFXModule ->
-                        dependencySet.add(getDependencies().create(
-                                Map.of("name", javaFXModule.getModuleName()))));
+                javaFXModulesWithTransitives.forEach(javaFXModule -> {
+                    Map<String, String> dependencyNotation = new HashMap<>();
+                    dependencyNotation.put("name", javaFXModule.getModuleName());
+                    dependencySet.add(getDependencies().create(dependencyNotation));
+                });
             }
         });
     }
