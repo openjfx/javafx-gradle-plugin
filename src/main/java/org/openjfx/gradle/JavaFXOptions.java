@@ -36,13 +36,14 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.FlatDirectoryArtifactRepository;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.nativeplatform.MachineArchitecture;
 import org.gradle.nativeplatform.OperatingSystemFamily;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,13 +55,13 @@ abstract public class JavaFXOptions {
 
     static final String MAVEN_JAVAFX_ARTIFACT_GROUP_ID = "org.openjfx";
     private static final String JAVAFX_SDK_LIB_FOLDER = "lib";
+    private final SetProperty<String> modules;
+    private final Property<JavaFXPlatform> platform;
 
-    private JavaFXPlatform platform;
 
     private String version = "17";
     private String sdk;
     private String[] configurations = new String[] { "implementation" };
-    private List<String> modules = new ArrayList<>();
     private FlatDirectoryArtifactRepository customSDKArtifactRepository;
 
     private final SourceSetContainer sourceSets;
@@ -80,11 +81,18 @@ abstract public class JavaFXOptions {
 
     public JavaFXOptions(SourceSetContainer sourceSets, OsDetector osDetector) {
         this.sourceSets = sourceSets;
-        platform = JavaFXPlatform.detect(osDetector);
+        platform = getObjects().property(JavaFXPlatform.class);
+        getFxPlatform().convention(JavaFXPlatform.detect(osDetector));
         setClasspathAttributesForAllSourceSets();
+        modules = getObjects().setProperty(String.class);
     }
 
+
     public JavaFXPlatform getPlatform() {
+        return getFxPlatform().get();
+    }
+
+    public  Property<JavaFXPlatform> getFxPlatform(){
         return platform;
     }
 
@@ -94,7 +102,7 @@ abstract public class JavaFXOptions {
      * Supported classifiers are linux, linux-aarch64, win/windows, osx/mac/macos or osx-aarch64/mac-aarch64/macos-aarch64.
      */
     public void setPlatform(String platform) {
-        this.platform = JavaFXPlatform.fromString(platform);
+        this.getFxPlatform().set(JavaFXPlatform.fromString(platform));
         setClasspathAttributesForAllSourceSets();
     }
 
@@ -108,10 +116,10 @@ abstract public class JavaFXOptions {
     private void setClasspathAttributes(Configuration classpath) {
         classpath.getAttributes().attribute(
                 OperatingSystemFamily.OPERATING_SYSTEM_ATTRIBUTE,
-                getObjects().named(OperatingSystemFamily.class, platform.getOsFamily()));
+                getObjects().named(OperatingSystemFamily.class, platform.get().getOsFamily()));
         classpath.getAttributes().attribute(
                 MachineArchitecture.ARCHITECTURE_ATTRIBUTE,
-                getObjects().named(MachineArchitecture.class, platform.getArch()));
+                getObjects().named(MachineArchitecture.class, platform.get().getArch()));
     }
 
     public String getVersion() {
@@ -168,12 +176,17 @@ abstract public class JavaFXOptions {
         return configurations;
     }
 
-    public List<String> getModules() {
+    public SetProperty<String> getFxModules() {
         return modules;
     }
 
+    public Set<String> getModules() {
+        return modules.get();
+    }
+
     public void setModules(List<String> modules) {
-        this.modules = modules;
+        this.modules.set(modules);
+
     }
 
     public void modules(String...moduleNames) {
@@ -190,7 +203,7 @@ abstract public class JavaFXOptions {
                 return;
             }
 
-            var javaFXModules = JavaFXModule.getJavaFXModules(this.modules);
+            var javaFXModules = JavaFXModule.getJavaFXModules(getModules());
             if (customSDKArtifactRepository == null) {
                 javaFXModules.stream()
                         .sorted()
