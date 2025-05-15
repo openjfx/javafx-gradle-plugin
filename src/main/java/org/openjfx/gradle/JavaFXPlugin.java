@@ -84,24 +84,18 @@ public class JavaFXPlugin implements Plugin<Project> {
         project.afterEvaluate(new Action<Project>() {
             @Override
             public void execute(Project project) {
-                System.out.println("project = " + project);
-                if (!project.getPlugins().hasPlugin("application") || project.getPlugins().hasPlugin("org.javamodularity.moduleplugin")) {
+                if (!project.getPlugins().hasPlugin("application") ||
+                        (project.getPlugins().hasPlugin("org.javamodularity.moduleplugin")) && project.getExtensions().findByName("modulename") != null) {
                     return;
                 }
-                System.out.println("project2 = " + project);
                 project.getTasks().named("run", JavaExec.class, new Action<JavaExec>() {
                     @Override
                     public void execute(JavaExec task) {
-                        if (true) {
-                            throw new RuntimeException("test");
-                        }
-                        System.out.println("project3 = " + project);
                         if (GradleVersion.current().compareTo(GradleVersion.version("6.4")) >= 0 &&task.getMainModule().isPresent()) {
                             return;
                         }
                         final var fxPlatform = javaFXOptions.getFxPlatform();
                         final var fxModules = javaFXOptions.getFxModules();
-                        System.out.println("project3 = " + fxModules);
                         task.doFirst(a -> {
                             putJavaFXJarsOnModulePathForClasspathApplication(task, fxPlatform, fxModules);
                         });
