@@ -95,11 +95,12 @@ public class JavaFXPlugin implements Plugin<Project> {
 
                 final var fxPlatform = javaFXOptions.getFxPlatform();
                 final var fxModules = javaFXOptions.getFxModules();
-                if (execTask.getExtensions().findByName("moduleOptions") != null) {
-                    return;
-                }
+
 
                 execTask.doFirst(a -> {
+                    if (a.getExtensions().findByName("moduleOptions") != null) {
+                        return;
+                    }
                     putJavaFXJarsOnModulePathForClasspathApplication(execTask, fxPlatform, fxModules);
                 });
             });
