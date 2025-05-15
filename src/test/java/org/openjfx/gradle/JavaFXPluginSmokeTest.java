@@ -93,7 +93,6 @@ abstract class JavaFXPluginSmokeTest {
         var result = build(":non-modular:run");
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":non-modular:run").getOutcome());
-        System.out.println("result.getOutput() = " + result.getOutput());
 
         assertEquals(List.of("javafx-base-17-" + classifier + ".jar", "javafx-controls-17-" + classifier + ".jar", "javafx-graphics-17-" + classifier + ".jar", "javafx-media-17-" + classifier + ".jar", "javafx-web-17-" + classifier + ".jar"), compileClassPath(result).get(0));
         assertEquals(List.of("main", "main"), runtimeClassPath(result).get(0));
