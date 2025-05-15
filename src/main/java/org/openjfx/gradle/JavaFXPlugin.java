@@ -54,8 +54,8 @@ public class JavaFXPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        if (GradleVersion.current().compareTo(GradleVersion.version("6.1")) < 0) {
-            throw new GradleException("This plugin requires Gradle 6.1+");
+        if (GradleVersion.current().compareTo(GradleVersion.version("6.4")) < 0) {
+            throw new GradleException("This plugin requires Gradle 6.4+");
         }
         // Make sure 'java-base' is applied first, which makes the 'SourceSetContainer' available.
         // More concrete Java plugins that build on top of 'java-base' – like 'java-library' or 'application' –
@@ -94,7 +94,7 @@ public class JavaFXPlugin implements Plugin<Project> {
                 project.getTasks().named("run", JavaExec.class, new Action<JavaExec>() {
                     @Override
                     public void execute(JavaExec task) {
-                        if (GradleVersion.current().compareTo(GradleVersion.version("6.4")) >= 0 &&task.getMainModule().isPresent()) {
+                        if (task.getMainModule().isPresent()) {
                             return;
                         }
                         final var fxPlatform = javaFXOptions.getFxPlatform();
