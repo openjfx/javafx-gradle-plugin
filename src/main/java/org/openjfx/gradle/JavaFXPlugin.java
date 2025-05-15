@@ -43,6 +43,7 @@ import org.gradle.util.GradleVersion;
 import org.openjfx.gradle.metadatarule.JavaFXComponentMetadataRule;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,6 +82,7 @@ public class JavaFXPlugin implements Plugin<Project> {
         // and other Java-base plugins like Kotlin JVM)
         project.getPlugins().withId("java", p -> javaFXOptions.setConfiguration("implementation"));
 
+
         project.afterEvaluate(new Action<Project>() {
             @Override
             public void execute(Project project) {
@@ -88,9 +90,14 @@ public class JavaFXPlugin implements Plugin<Project> {
                         (project.getPlugins().hasPlugin("org.javamodularity.moduleplugin")) && project.getExtensions().findByName("modulename") != null) {
                     return;
                 }
+                System.out.println("project = " + new ArrayList<>(project.getPlugins()));
+                System.out.println("project = " + project.getPlugins().hasPlugin("org.javamodularity.moduleplugin"));
+                System.out.println("project = " + project.getExtensions().findByName("modulename"));
+
                 project.getTasks().named("run", JavaExec.class, new Action<JavaExec>() {
                     @Override
                     public void execute(JavaExec task) {
+                        System.out.println("project = " + project.getExtensions().findByName("modulename"));
                         if (GradleVersion.current().compareTo(GradleVersion.version("6.4")) >= 0 &&task.getMainModule().isPresent()) {
                             return;
                         }
