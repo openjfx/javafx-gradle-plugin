@@ -35,6 +35,4 @@ class JavaFXPluginSmokeTestGradle83 extends JavaFXPluginSmokeTest {
     protected String getGradleVersion() {
         return "8.3";
     }
-
-
 }
