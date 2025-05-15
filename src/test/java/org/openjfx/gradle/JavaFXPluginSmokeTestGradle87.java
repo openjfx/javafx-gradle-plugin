@@ -29,11 +29,11 @@
  */
 package org.openjfx.gradle;
 
-class JavaFXPluginSmokeTestGradle83 extends JavaFXPluginSmokeTest {
+class JavaFXPluginSmokeTestGradle87 extends JavaFXPluginSmokeTest {
 
     @Override
     protected String getGradleVersion() {
-        return "8.3";
+        return "8.7";
     }
 
 

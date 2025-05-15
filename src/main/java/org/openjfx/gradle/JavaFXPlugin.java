@@ -31,10 +31,7 @@ package org.openjfx.gradle;
 
 import com.google.gradle.osdetector.OsDetector;
 import com.google.gradle.osdetector.OsDetectorPlugin;
-import org.gradle.api.GradleException;
-import org.gradle.api.NonNullApi;
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
+import org.gradle.api.*;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
@@ -84,27 +81,36 @@ public class JavaFXPlugin implements Plugin<Project> {
         // and other Java-base plugins like Kotlin JVM)
         project.getPlugins().withId("java", p -> javaFXOptions.setConfiguration("implementation"));
 
-        // Only do addition configuration of the ':run' task when the 'application' plugin is applied.
-        // Otherwise, that task does not exist.
-        project.getPlugins().withId("application", p -> {
-            project.getTasks().named(ApplicationPlugin.TASK_RUN_NAME, JavaExec.class, execTask -> {
-                if (GradleVersion.current().compareTo(GradleVersion.version("6.4")) >= 0 && execTask.getMainModule().isPresent()) {
-                    return; // a module, as determined by Gradle core
+        project.afterEvaluate(new Action<Project>() {
+            @Override
+            public void execute(Project project) {
+                System.out.println("project = " + project);
+                if (!project.getPlugins().hasPlugin("application") || project.getPlugins().hasPlugin("org.javamodularity.moduleplugin")) {
+                    return;
                 }
-
-
-                final var fxPlatform = javaFXOptions.getFxPlatform();
-                final var fxModules = javaFXOptions.getFxModules();
-
-
-                execTask.doFirst(a -> {
-                    if (a.getExtensions().findByName("moduleOptions") != null) {
-                        return;
+                System.out.println("project2 = " + project);
+                project.getTasks().named("run", JavaExec.class, new Action<JavaExec>() {
+                    @Override
+                    public void execute(JavaExec task) {
+                        if (true) {
+                            throw new RuntimeException("test");
+                        }
+                        System.out.println("project3 = " + project);
+                        if (GradleVersion.current().compareTo(GradleVersion.version("6.4")) >= 0 &&task.getMainModule().isPresent()) {
+                            return;
+                        }
+                        final var fxPlatform = javaFXOptions.getFxPlatform();
+                        final var fxModules = javaFXOptions.getFxModules();
+                        System.out.println("project3 = " + fxModules);
+                        task.doFirst(a -> {
+                            putJavaFXJarsOnModulePathForClasspathApplication(task, fxPlatform, fxModules);
+                        });
                     }
-                    putJavaFXJarsOnModulePathForClasspathApplication(execTask, fxPlatform, fxModules);
                 });
-            });
+
+            }
         });
+
     }
 
     /**
