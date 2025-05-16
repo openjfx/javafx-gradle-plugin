@@ -31,10 +31,7 @@ package org.openjfx.gradle;
 
 import org.gradle.api.GradleException;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -81,16 +78,15 @@ public enum JavaFXModule {
         return p.matcher(jarFileName).matches();
     }
 
-    public static Set<JavaFXModule> getJavaFXModules(List<String> moduleNames) {
+    public static Set<JavaFXModule> getJavaFXModules(Collection<String> moduleNames) {
         validateModules(moduleNames);
-
         return moduleNames.stream()
                 .map(JavaFXModule::fromModuleName)
                 .flatMap(Optional::stream)
                 .collect(Collectors.toSet());
     }
 
-    public static void validateModules(List<String> moduleNames) {
+    public static void validateModules(Collection<String> moduleNames) {
         var invalidModules = moduleNames.stream()
                 .filter(module -> JavaFXModule.fromModuleName(module).isEmpty())
                 .collect(Collectors.toList());
