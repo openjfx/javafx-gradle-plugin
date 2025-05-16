@@ -61,6 +61,10 @@ public enum JavaFXPlatform {
         return classifier;
     }
 
+    public String getJarClassifier() {
+        return classifier + (isHeadless() ? "-monocle" : "");
+    }
+
     public String getOsFamily() {
         return osFamily;
     }
@@ -110,5 +114,9 @@ public enum JavaFXPlatform {
                 return JavaFXPlatform.OSX_AARCH64;
         }
         return valueOf(platform);
+    }
+
+    private static boolean isHeadless() {
+        return "true".equals(System.getProperty("java.awt.headless"));
     }
 }
