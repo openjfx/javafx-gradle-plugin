@@ -8,7 +8,7 @@ group = 'org.openjfx'
 version = '0.1.1-SNAPSHOT'
 
 java {
-    toolchain.languageVersion = JavaLanguageVersion.of(11)
+    toolchain.languageVersion = JavaLanguageVersion.of(8)
 }
 
 repositories {
@@ -26,6 +26,15 @@ dependencies {
 
 tasks.named('test', Test) {
     useJUnitPlatform()
+
+    def java11Home = javaToolchains
+          .launcherFor { languageVersion.set(JavaLanguageVersion.of(11)) }
+          .get()
+          .metadata
+          .installationPath
+          .asFile
+          .absolutePath
+    systemProperty("java11Home", java11Home)
 }
 
 gradlePlugin {
