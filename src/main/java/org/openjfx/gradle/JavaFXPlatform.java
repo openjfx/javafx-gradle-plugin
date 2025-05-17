@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 
 public enum JavaFXPlatform {
 
+    WIN_x86_32("win-x86", "windows-x86_32", OperatingSystemFamily.WINDOWS, MachineArchitecture.X86),
     LINUX("linux", "linux-x86_64", OperatingSystemFamily.LINUX, MachineArchitecture.X86_64),
     LINUX_AARCH64("linux-aarch64", "linux-aarch_64", OperatingSystemFamily.LINUX, MachineArchitecture.ARM64),
     WINDOWS("win", "windows-x86_64", OperatingSystemFamily.WINDOWS, MachineArchitecture.X86_64),
