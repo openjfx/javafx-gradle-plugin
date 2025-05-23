@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Gluon
+ * Copyright (c) 2025, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,22 +29,12 @@
  */
 package org.openjfx.gradle;
 
-import org.junit.jupiter.api.Disabled;
-
-class JavaFXPluginSmokeTestGradle61 extends JavaFXPluginSmokeTest {
+class JavaFXPluginSmokeTestGradle87 extends JavaFXPluginSmokeTest {
 
     @Override
     protected String getGradleVersion() {
-        return "6.1";
+        return "8.7";
     }
 
-    @Override
-    protected String modularApplicationRuntime() {
-        return "main";
-    }
 
-    @Disabled
-    void smokeTestModular() {
-        // Support for building Java Modules was only added in Gradle 6.4
-    }
 }
