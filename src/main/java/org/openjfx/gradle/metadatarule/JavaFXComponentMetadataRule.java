@@ -79,7 +79,7 @@ abstract public class JavaFXComponentMetadataRule implements ComponentMetadataRu
             });
             variant.withFiles(files -> {
                 files.removeAllFiles();
-                files.addFile(name + "-" + version + "-" + javaFXPlatform.getClassifier() + ".jar");
+                files.addFile(name + "-" + version + "-" + javaFXPlatform.getJarClassifier() + ".jar");
             });
         });
     }
