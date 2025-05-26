@@ -62,6 +62,19 @@ abstract public class JavaFXComponentMetadataRule implements ComponentMetadataRu
             addJavaFXPlatformVariant(javaFXPlatform, details, "Compile", "compile");
             addJavaFXPlatformVariant(javaFXPlatform, details, "Runtime", "runtime");
         }
+
+        // prevent the default variant with empty jars to be resolved if a not-configured variant is requested
+        preventDefaultVariantsAsFallback(details, "compile");
+        preventDefaultVariantsAsFallback(details, "runtime");
+    }
+
+    private void preventDefaultVariantsAsFallback(ComponentMetadataDetails details, String variantName) {
+        details.withVariant(variantName, variant -> {
+            variant.attributes(attributes -> {
+                attributes.attribute(OPERATING_SYSTEM_ATTRIBUTE, getObjects().named(OperatingSystemFamily.class, "none"));
+                attributes.attribute(ARCHITECTURE_ATTRIBUTE, getObjects().named(MachineArchitecture.class, "none"));
+            });
+        });
     }
 
     private void addJavaFXPlatformVariant(JavaFXPlatform javaFXPlatform, ComponentMetadataDetails details, String nameSuffix, String baseVariant) {
