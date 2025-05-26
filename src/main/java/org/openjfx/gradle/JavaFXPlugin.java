@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2023, Gluon
+ * Copyright (c) 2018, 2025, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,19 +31,19 @@ package org.openjfx.gradle;
 
 import com.google.gradle.osdetector.OsDetector;
 import com.google.gradle.osdetector.OsDetectorPlugin;
-import org.gradle.api.GradleException;
-import org.gradle.api.NonNullApi;
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
+import org.gradle.api.*;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.util.GradleVersion;
 import org.openjfx.gradle.metadatarule.JavaFXComponentMetadataRule;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -54,10 +54,9 @@ public class JavaFXPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        if (GradleVersion.current().compareTo(GradleVersion.version("6.1")) < 0) {
-            throw new GradleException("This plugin requires Gradle 6.1+");
+        if (GradleVersion.current().compareTo(GradleVersion.version("6.4")) < 0) {
+            throw new GradleException("This plugin requires Gradle 6.4+");
         }
-
         // Make sure 'java-base' is applied first, which makes the 'SourceSetContainer' available.
         // More concrete Java plugins that build on top of 'java-base' – like 'java-library' or 'application' –
         // will be applied by the user.
@@ -83,23 +82,32 @@ public class JavaFXPlugin implements Plugin<Project> {
         // and other Java-base plugins like Kotlin JVM)
         project.getPlugins().withId("java", p -> javaFXOptions.setConfiguration("implementation"));
 
-        // Only do addition configuration of the ':run' task when the 'application' plugin is applied.
-        // Otherwise, that task does not exist.
-        project.getPlugins().withId("application", p -> {
-            project.getTasks().named(ApplicationPlugin.TASK_RUN_NAME, JavaExec.class, execTask -> {
-                if (GradleVersion.current().compareTo(GradleVersion.version("6.4")) >= 0 && execTask.getMainModule().isPresent()) {
-                    return; // a module, as determined by Gradle core
+
+        project.afterEvaluate(new Action<Project>() {
+            @Override
+            public void execute(Project project) {
+                if (!project.getPlugins().hasPlugin("application") ||
+                        (project.getPlugins().hasPlugin("org.javamodularity.moduleplugin")) && project.getExtensions().findByName("modulename") != null) {
+                    return;
                 }
 
-                execTask.doFirst(a -> {
-                    if (execTask.getExtensions().findByName("moduleOptions") != null) {
-                        return; // a module, as determined by modularity plugin
+                project.getTasks().named("run", JavaExec.class, new Action<JavaExec>() {
+                    @Override
+                    public void execute(JavaExec task) {
+                        if (task.getMainModule().isPresent()) {
+                            return;
+                        }
+                        final var fxPlatform = javaFXOptions.getFxPlatform();
+                        final var fxModules = javaFXOptions.getFxModules();
+                        task.doFirst(a -> {
+                            putJavaFXJarsOnModulePathForClasspathApplication(task, fxPlatform, fxModules);
+                        });
                     }
-
-                    putJavaFXJarsOnModulePathForClasspathApplication(execTask, javaFXOptions);
                 });
-            });
+
+            }
         });
+
     }
 
     /**
@@ -107,15 +115,15 @@ public class JavaFXPlugin implements Plugin<Project> {
      * the classpath. Hence, this patches the setup of Gradle's standard ':run' task to move all JavaFX Jars
      * from '-classpath' to '-module-path'. This functionality is only relevant for NON-MODULAR apps.
      */
-    private static void putJavaFXJarsOnModulePathForClasspathApplication(JavaExec execTask, JavaFXOptions javaFXOptions) {
+    private static void putJavaFXJarsOnModulePathForClasspathApplication(JavaExec execTask, final Property<JavaFXPlatform> platform, final SetProperty<String> stringSetProperty) {
         FileCollection classpath = execTask.getClasspath();
 
-        execTask.setClasspath(classpath.filter(jar -> !isJavaFXJar(jar, javaFXOptions.getPlatform())));
-        var modulePath = classpath.filter(jar -> isJavaFXJar(jar, javaFXOptions.getPlatform()));
+        execTask.setClasspath(classpath.filter(jar -> !isJavaFXJar(jar, platform.get())));
+        var modulePath = classpath.filter(jar -> isJavaFXJar(jar, platform.get()));
 
         execTask.getJvmArgumentProviders().add(() -> List.of(
                 "--module-path", modulePath.getAsPath(),
-                "--add-modules", String.join(",", javaFXOptions.getModules())
+                "--add-modules", String.join(",", stringSetProperty.get())
         ));
     }
 

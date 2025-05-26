@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2023, Gluon
+ * Copyright (c) 2018, 2025, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@ package org.openjfx.gradle;
 
 import org.gradle.api.GradleException;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -81,16 +82,15 @@ public enum JavaFXModule {
         return p.matcher(jarFileName).matches();
     }
 
-    public static Set<JavaFXModule> getJavaFXModules(List<String> moduleNames) {
+    public static Set<JavaFXModule> getJavaFXModules(Collection<String> moduleNames) {
         validateModules(moduleNames);
-
         return moduleNames.stream()
                 .map(JavaFXModule::fromModuleName)
                 .flatMap(Optional::stream)
                 .collect(Collectors.toSet());
     }
 
-    public static void validateModules(List<String> moduleNames) {
+    public static void validateModules(Collection<String> moduleNames) {
         var invalidModules = moduleNames.stream()
                 .filter(module -> JavaFXModule.fromModuleName(module).isEmpty())
                 .collect(Collectors.toList());

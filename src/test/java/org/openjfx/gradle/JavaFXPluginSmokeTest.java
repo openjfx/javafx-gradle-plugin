@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2023, Gluon
+ * Copyright (c) 2018, 2025, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,10 +33,12 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,6 +76,7 @@ abstract class JavaFXPluginSmokeTest {
 
     @Test
     void smokeTestModularWithModularityPlugin() {
+        Assumptions.assumeFalse(useConfigurationCache(), "modularity plugin does not support configuration cache");
         var result = build(":modular-with-modularity-plugin:run");
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":modular-with-modularity-plugin:run").getOutcome());
@@ -135,7 +138,8 @@ abstract class JavaFXPluginSmokeTest {
         return result.getOutput().lines().filter(l -> l.contains(pathArg)).map(l -> {
             int pathArgIndex = l.indexOf(pathArg)  + pathArg.length();
             String pathString = l.substring(pathArgIndex, l.indexOf(" ", pathArgIndex));
-            if (pathString.isBlank()) {
+            //recently gradle added an empty classpath instead of omitting it entirely which seems like the same thing?
+            if (pathString.isBlank() || pathString.equals("\"\"")) {
                 return List.<String>of();
             }
             String[] path = pathString.split(System.getProperty("path.separator"));
@@ -149,7 +153,21 @@ abstract class JavaFXPluginSmokeTest {
                 .withGradleVersion(getGradleVersion())
                 .withPluginClasspath()
                 .withDebug(ManagementFactory.getRuntimeMXBean().getInputArguments().toString().contains("-agentlib:jdwp"))
-                .withArguments("clean", task, "--stacktrace", "--debug")
+                .withArguments(getGradleRunnerArguments(task))
                 .build();
+    }
+
+    protected List<String> getGradleRunnerArguments(String taskname) {
+        //note that the tests are written around --debug, they will fail if you reduce logging
+        final var args = new ArrayList<String>(List.of("clean", taskname, "--stacktrace", "--debug"));
+        if (useConfigurationCache()) {
+            args.add("--configuration-cache");
+        }
+        return args;
+
+    }
+
+    protected boolean useConfigurationCache() {
+        return false;
     }
 }
