@@ -64,6 +64,28 @@ class JavaFXModuleTest {
     }
 
     @Test
+    void existingIncubatorModuleName() {
+        Optional<JavaFXModule> javafxDependency = JavaFXModule.fromModuleName("jfx.incubator.richtext");
+        assertTrue(javafxDependency.isPresent(), "Expected the text to convert to a module, but it did not");
+        assertEquals(JavaFXModule.RICHTEXT_INCUBATOR, javafxDependency.get());
+    }
+
+    @Test
+    void nonExistingIncubatorModuleName() {
+        assertTrue(JavaFXModule.fromModuleName("jfx.incubator.unknown").isEmpty(), "Somehow got a module from an unknown module name.");
+    }
+
+    @Test
+    void getIncubatorModuleName() {
+        assertEquals("jfx.incubator.richtext", JavaFXModule.RICHTEXT_INCUBATOR.getModuleName());
+    }
+
+    @Test
+    void getIncubatorArtifactName() {
+        assertEquals("jfx-incubator-richtext", JavaFXModule.RICHTEXT_INCUBATOR.getArtifactName());
+    }
+
+    @Test
     void validateWithValidModules() {
         var moduleNames = List.of(JavaFXModule.CONTROLS.getModuleName(), JavaFXModule.WEB.getModuleName());
 
