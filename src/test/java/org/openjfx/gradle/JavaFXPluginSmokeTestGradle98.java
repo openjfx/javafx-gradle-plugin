@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Gluon
+ * Copyright (c) 2026, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,10 +29,10 @@
  */
 package org.openjfx.gradle;
 
-class JavaFXPluginSmokeTestGradle69 extends JavaFXPluginSmokeTest {
+class JavaFXPluginSmokeTestGradle98 extends JavaFXPluginSmokeTest {
 
     @Override
     protected String getGradleVersion() {
-        return "6.9.4";
+        return "9.8.1";
     }
 }

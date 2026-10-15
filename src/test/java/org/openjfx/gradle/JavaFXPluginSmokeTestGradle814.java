@@ -35,4 +35,9 @@ class JavaFXPluginSmokeTestGradle814 extends JavaFXPluginSmokeTest {
     protected String getGradleVersion() {
         return "8.14";
     }
+
+    @Override
+    protected int getMaxJavaVersion() {
+        return 24;
+    }
 }

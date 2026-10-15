@@ -6,6 +6,11 @@ Simplifies working with JavaFX 11+ for gradle projects.
 ![Github Actions](https://github.com/openjfx/javafx-gradle-plugin/actions/workflows/build.yml/badge.svg)
 [![BSD-3 license](https://img.shields.io/badge/license-BSD--3-%230778B9.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
+## Requirements
+
+The plugin requires Gradle to run on `JDK 17` or higher, and therefore `Gradle 7.3` or higher.
+Your application itself can still target an older Java version, e.g. via a toolchain.
+
 ## Getting started
 
 To use the plugin, apply the following two steps:
@@ -218,11 +223,11 @@ there's a migration scenario not covered here that should be included.
 
 ### Troubleshooting
 
-#### Gradle version
+#### Gradle and JDK version
 
-The plugin now requires `Gradle 6.1` or higher. Consider updating your Gradle settings, wrapper,
-and build to a more recent version of Gradle. Additionally, updating your plugins and dependencies
-can help minimize issues with the plugin.
+Make sure your build meets the [requirements](#requirements). Consider updating your Gradle
+settings, wrapper, and build to a more recent version of Gradle. Additionally, updating your
+plugins and dependencies can help minimize issues with the plugin.
 
 #### Mixed JavaFX jars
 

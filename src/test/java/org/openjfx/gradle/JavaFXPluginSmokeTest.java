@@ -34,6 +34,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -57,6 +58,20 @@ abstract class JavaFXPluginSmokeTest {
 
     protected abstract String getGradleVersion();
 
+    /**
+     * Highest JDK version the Gradle version under test runs on.
+     */
+    protected int getMaxJavaVersion() {
+        return Integer.MAX_VALUE;
+    }
+
+    @BeforeEach
+    void checkJavaVersion() {
+        int javaVersion = Runtime.version().feature();
+        Assumptions.assumeTrue(javaVersion <= getMaxJavaVersion(),
+                "Gradle " + getGradleVersion() + " does not run on JDK " + javaVersion);
+    }
+
     protected String modularApplicationRuntime() {
         return "modular-with-modularity-plugin.jar";
     }
@@ -67,8 +82,8 @@ abstract class JavaFXPluginSmokeTest {
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":modular:run").getOutcome());
 
-        assertEquals(List.of("javafx-base-17-" + classifier + ".jar", "javafx-controls-17-" + classifier + ".jar", "javafx-graphics-17-" + classifier + ".jar"), modulePath(result).get(0));
-        assertEquals(List.of("javafx-base-17-" + classifier + ".jar", "javafx-controls-17-" + classifier + ".jar", "javafx-graphics-17-" + classifier + ".jar", "modular.jar"), modulePath(result).get(1));
+        assertEquals(List.of("javafx-base-17.0.20-" + classifier + ".jar", "javafx-controls-17.0.20-" + classifier + ".jar", "javafx-graphics-17.0.20-" + classifier + ".jar"), modulePath(result).get(0));
+        assertEquals(List.of("javafx-base-17.0.20-" + classifier + ".jar", "javafx-controls-17.0.20-" + classifier + ".jar", "javafx-graphics-17.0.20-" + classifier + ".jar", "modular.jar"), modulePath(result).get(1));
 
         assertEquals(List.of(), compileClassPath(result));
         assertEquals(List.of(), runtimeClassPath(result));
@@ -81,8 +96,8 @@ abstract class JavaFXPluginSmokeTest {
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":modular-with-modularity-plugin:run").getOutcome());
 
-        assertEquals(List.of("javafx-base-17-" + classifier + ".jar", "javafx-controls-17-" + classifier + ".jar", "javafx-graphics-17-" + classifier + ".jar"), modulePath(result).get(0));
-        assertEquals(List.of("javafx-base-17-" + classifier + ".jar", "javafx-controls-17-" + classifier + ".jar", "javafx-graphics-17-" + classifier + ".jar", modularApplicationRuntime()), modulePath(result).get(1));
+        assertEquals(List.of("javafx-base-17.0.20-" + classifier + ".jar", "javafx-controls-17.0.20-" + classifier + ".jar", "javafx-graphics-17.0.20-" + classifier + ".jar"), modulePath(result).get(0));
+        assertEquals(List.of("javafx-base-17.0.20-" + classifier + ".jar", "javafx-controls-17.0.20-" + classifier + ".jar", "javafx-graphics-17.0.20-" + classifier + ".jar", modularApplicationRuntime()), modulePath(result).get(1));
 
         assertEquals(List.of(), compileClassPath(result));
         assertEquals(List.of(), runtimeClassPath(result));
@@ -94,9 +109,9 @@ abstract class JavaFXPluginSmokeTest {
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":non-modular:run").getOutcome());
 
-        assertEquals(List.of("javafx-base-17-" + classifier + ".jar", "javafx-controls-17-" + classifier + ".jar", "javafx-graphics-17-" + classifier + ".jar", "javafx-media-17-" + classifier + ".jar", "javafx-web-17-" + classifier + ".jar"), compileClassPath(result).get(0));
+        assertEquals(List.of("javafx-base-17.0.20-" + classifier + ".jar", "javafx-controls-17.0.20-" + classifier + ".jar", "javafx-graphics-17.0.20-" + classifier + ".jar", "javafx-media-17.0.20-" + classifier + ".jar", "javafx-web-17.0.20-" + classifier + ".jar"), compileClassPath(result).get(0));
         assertEquals(List.of("main", "main"), runtimeClassPath(result).get(0));
-        assertEquals(List.of("javafx-base-17-" + classifier + ".jar", "javafx-controls-17-" + classifier + ".jar", "javafx-graphics-17-" + classifier + ".jar", "javafx-media-17-" + classifier + ".jar", "javafx-web-17-" + classifier + ".jar"), modulePath(result).get(0));
+        assertEquals(List.of("javafx-base-17.0.20-" + classifier + ".jar", "javafx-controls-17.0.20-" + classifier + ".jar", "javafx-graphics-17.0.20-" + classifier + ".jar", "javafx-media-17.0.20-" + classifier + ".jar", "javafx-web-17.0.20-" + classifier + ".jar"), modulePath(result).get(0));
     }
 
     @Test
@@ -105,9 +120,9 @@ abstract class JavaFXPluginSmokeTest {
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":transitive:run").getOutcome());
 
-        assertEquals(List.of("charts-17.1.41.jar", "javafx-base-17-" + classifier + ".jar", "javafx-controls-17-" + classifier + ".jar", "javafx-graphics-17-" + classifier + ".jar"), compileClassPath(result).get(0));
+        assertEquals(List.of("charts-17.1.41.jar", "javafx-base-17.0.20-" + classifier + ".jar", "javafx-controls-17.0.20-" + classifier + ".jar", "javafx-graphics-17.0.20-" + classifier + ".jar"), compileClassPath(result).get(0));
         assertEquals(List.of("charts-17.1.41.jar", "countries-17.0.29.jar", "heatmap-17.0.17.jar", "logback-classic-1.2.6.jar", "logback-core-1.2.6.jar", "main", "main", "slf4j-api-1.7.32.jar", "toolbox-17.0.45.jar", "toolboxfx-17.0.37.jar"), runtimeClassPath(result).get(0));
-        assertEquals(List.of("javafx-base-17.0.6-" + classifier + ".jar", "javafx-controls-17.0.6-" + classifier + ".jar", "javafx-graphics-17.0.6-" + classifier + ".jar", "javafx-swing-17.0.6-" + classifier + ".jar"), modulePath(result).get(0));
+        assertEquals(List.of("javafx-base-17.0.20-" + classifier + ".jar", "javafx-controls-17.0.20-" + classifier + ".jar", "javafx-graphics-17.0.20-" + classifier + ".jar", "javafx-swing-17.0.6-" + classifier + ".jar"), modulePath(result).get(0));
     }
 
     @Test
