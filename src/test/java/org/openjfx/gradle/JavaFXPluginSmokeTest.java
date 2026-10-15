@@ -59,13 +59,6 @@ abstract class JavaFXPluginSmokeTest {
     protected abstract String getGradleVersion();
 
     /**
-     * Lowest JDK version the Gradle version under test runs on.
-     */
-    protected int getMinJavaVersion() {
-        return 11;
-    }
-
-    /**
      * Highest JDK version the Gradle version under test runs on.
      */
     protected int getMaxJavaVersion() {
@@ -75,7 +68,7 @@ abstract class JavaFXPluginSmokeTest {
     @BeforeEach
     void checkJavaVersion() {
         int javaVersion = Runtime.version().feature();
-        Assumptions.assumeTrue(javaVersion >= getMinJavaVersion() && javaVersion <= getMaxJavaVersion(),
+        Assumptions.assumeTrue(javaVersion <= getMaxJavaVersion(),
                 "Gradle " + getGradleVersion() + " does not run on JDK " + javaVersion);
     }
 
