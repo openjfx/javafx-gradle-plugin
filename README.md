@@ -250,9 +250,9 @@ there's a migration scenario not covered here that should be included.
 
 #### Gradle and JDK version
 
-The plugin now requires Gradle to run on `JDK 17` or higher, and therefore `Gradle 7.3` or higher.
-Consider updating your Gradle settings, wrapper, and build to a more recent version of Gradle. Additionally, updating your plugins and dependencies
-can help minimize issues with the plugin.
+Make sure your build meets the [requirements](#requirements). Consider updating your Gradle
+settings, wrapper, and build to a more recent version of Gradle. Additionally, updating your
+plugins and dependencies can help minimize issues with the plugin.
 
 #### Mixed JavaFX jars
 
