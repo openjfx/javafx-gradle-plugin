@@ -14,6 +14,15 @@ application {
     }
 }
 
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.9.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+
 tasks.register('runOther', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'org.openjfx.gradle.javafx.test.Main'
@@ -22,5 +31,5 @@ tasks.register('runOther', JavaExec) {
 javafx {
     version = '17.0.20'
     modules = [ 'javafx.controls', 'javafx.web' ]
-    runTasks = [ 'run', 'runOther' ]
+    modulePathTasks = [ 'run', 'runOther', 'test' ]
 }

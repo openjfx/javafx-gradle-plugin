@@ -132,6 +132,20 @@ abstract class JavaFXPluginSmokeTest {
     }
 
     @Test
+    void smokeTestNonModularTest() {
+        var result = build(":non-modular:test");
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":non-modular:test").getOutcome());
+    }
+
+    @Test
+    void smokeTestModularTest() {
+        var result = build(":modular:test");
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":modular:test").getOutcome());
+    }
+
+    @Test
     void smokeTestTransitive() {
         var result = build(":transitive:run");
 

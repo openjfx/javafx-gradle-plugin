@@ -199,18 +199,19 @@ javafx {
 }
 </code></pre>
 
-### 7. Additional run tasks
+### 7. Additional run and test tasks
 
 For non-modular applications, the plugin moves the JavaFX jars of the `run` task from the classpath to the module path.
 If your build has further `JavaExec` tasks that start the application, e.g. with a Java agent,
-they can be configured via `runTasks` (default: `run`):
+or `Test` tasks that need JavaFX on the module path, they can be configured via `modulePathTasks` (default: `run`).
+Modular applications and modular tests are not changed, as Gradle already puts JavaFX on the module path for them.
 
 **Groovy**
 
 <pre><code>
 javafx {
     modules = [ 'javafx.controls', 'javafx.fxml' ]
-    <b>runTasks = [ 'run', 'runAgent' ]</b>
+    <b>modulePathTasks = [ 'run', 'runAgent', 'test' ]</b>
 }
 </code></pre>
 
@@ -219,7 +220,7 @@ javafx {
 <pre><code>
 javafx {
     modules("javafx.controls", "javafx.fxml")
-    <b>runTasks("run", "runAgent")</b>
+    <b>modulePathTasks("run", "runAgent", "test")</b>
 }
 </code></pre>
     

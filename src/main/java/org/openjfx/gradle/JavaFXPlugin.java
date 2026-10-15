@@ -39,6 +39,8 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSetContainer;
+import org.gradle.api.tasks.testing.Test;
+import org.gradle.process.JavaForkOptions;
 import org.gradle.util.GradleVersion;
 import org.openjfx.gradle.metadatarule.JavaFXComponentMetadataRule;
 
@@ -46,6 +48,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.openjfx.gradle.JavaFXOptions.MAVEN_JAVAFX_ARTIFACT_GROUP_ID;
 
@@ -90,23 +93,36 @@ public class JavaFXPlugin implements Plugin<Project> {
                     return;
                 }
 
-                for (String runTask : javaFXOptions.getRunTasks()) {
-                    // Only the 'run' task depends on the 'application' plugin, other run tasks are configured explicitly.
-                    if (runTask.equals(ApplicationPlugin.TASK_RUN_NAME) && !project.getPlugins().hasPlugin("application")) {
+                for (String taskName : javaFXOptions.getModulePathTasks()) {
+                    // Only the 'run' task depends on the 'application' plugin, other tasks are configured explicitly.
+                    if (taskName.equals(ApplicationPlugin.TASK_RUN_NAME) && !project.getPlugins().hasPlugin("application")) {
                         continue;
                     }
 
-                    project.getTasks().named(runTask, JavaExec.class, new Action<JavaExec>() {
+                    project.getTasks().named(taskName, new Action<Task>() {
                         @Override
-                        public void execute(JavaExec task) {
-                            if (task.getMainModule().isPresent()) {
-                                return;
-                            }
+                        public void execute(Task task) {
                             final var fxPlatform = javaFXOptions.getFxPlatform();
                             final var fxModules = javaFXOptions.getFxModules();
-                            task.doFirst(a -> {
-                                putJavaFXJarsOnModulePathForClasspathApplication(task, fxPlatform, fxModules);
-                            });
+                            if (task instanceof JavaExec) {
+                                JavaExec execTask = (JavaExec) task;
+                                if (execTask.getMainModule().isPresent()) {
+                                    return;
+                                }
+                                execTask.doFirst(a -> {
+                                    putJavaFXJarsOnModulePath(execTask, execTask.getClasspath(), execTask::setClasspath, fxPlatform, fxModules);
+                                });
+                            } else if (task instanceof Test) {
+                                Test testTask = (Test) task;
+                                testTask.doFirst(a -> {
+                                    if (isModularTest(testTask)) {
+                                        return;
+                                    }
+                                    putJavaFXJarsOnModulePath(testTask, testTask.getClasspath(), testTask::setClasspath, fxPlatform, fxModules);
+                                });
+                            } else {
+                                throw new GradleException("Task '" + task.getPath() + "' in 'javafx.modulePathTasks' has to be a JavaExec or Test task");
+                            }
                         }
                     });
                 }
@@ -117,20 +133,27 @@ public class JavaFXPlugin implements Plugin<Project> {
     }
 
     /**
-     * Gradle does currently not put anything on the --module-path if the application itself is executed from
-     * the classpath. Hence, this patches the setup of the configured run tasks (default: ':run') to move all JavaFX Jars
+     * Gradle does currently not put anything on the --module-path if the application (or test) itself is executed from
+     * the classpath. Hence, this patches the setup of the configured tasks (default: ':run') to move all JavaFX Jars
      * from '-classpath' to '-module-path'. This functionality is only relevant for NON-MODULAR apps.
      */
-    private static void putJavaFXJarsOnModulePathForClasspathApplication(JavaExec execTask, final Property<JavaFXPlatform> platform, final SetProperty<String> stringSetProperty) {
-        FileCollection classpath = execTask.getClasspath();
-
-        execTask.setClasspath(classpath.filter(jar -> !isJavaFXJar(jar, platform.get())));
+    private static void putJavaFXJarsOnModulePath(JavaForkOptions task, FileCollection classpath, Consumer<FileCollection> setClasspath, final Property<JavaFXPlatform> platform, final SetProperty<String> stringSetProperty) {
+        setClasspath.accept(classpath.filter(jar -> !isJavaFXJar(jar, platform.get())));
         var modulePath = classpath.filter(jar -> isJavaFXJar(jar, platform.get()));
 
-        execTask.getJvmArgumentProviders().add(() -> List.of(
+        task.getJvmArgumentProviders().add(() -> List.of(
                 "--module-path", modulePath.getAsPath(),
                 "--add-modules", String.join(",", stringSetProperty.get())
         ));
+    }
+
+    /**
+     * Same detection as Gradle uses: Tests run as module if the module path gets inferred
+     * and the test classes contain a module descriptor. Then Gradle takes care of the module path itself.
+     */
+    private static boolean isModularTest(Test task) {
+        return task.getModularity().getInferModulePath().get() &&
+                task.getTestClassesDirs().getFiles().stream().anyMatch(dir -> new File(dir, "module-info.class").isFile());
     }
 
     private static boolean isJavaFXJar(File jar, JavaFXPlatform platform) {

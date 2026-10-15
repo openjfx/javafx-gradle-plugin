@@ -57,7 +57,7 @@ abstract public class JavaFXOptions {
     static final String MAVEN_JAVAFX_ARTIFACT_GROUP_ID = "org.openjfx";
     private static final String JAVAFX_SDK_LIB_FOLDER = "lib";
     private final SetProperty<String> modules;
-    private final SetProperty<String> runTasks;
+    private final SetProperty<String> modulePathTasks;
     private final Property<JavaFXPlatform> platform;
 
 
@@ -87,8 +87,8 @@ abstract public class JavaFXOptions {
         getFxPlatform().convention(JavaFXPlatform.detect(osDetector));
         setClasspathAttributesForAllSourceSets();
         modules = getObjects().setProperty(String.class);
-        runTasks = getObjects().setProperty(String.class);
-        runTasks.convention(Set.of(ApplicationPlugin.TASK_RUN_NAME));
+        modulePathTasks = getObjects().setProperty(String.class);
+        modulePathTasks.convention(Set.of(ApplicationPlugin.TASK_RUN_NAME));
     }
 
 
@@ -197,25 +197,25 @@ abstract public class JavaFXOptions {
         setModules(List.of(moduleNames));
     }
 
-    public SetProperty<String> getFxRunTasks() {
-        return runTasks;
+    public SetProperty<String> getFxModulePathTasks() {
+        return modulePathTasks;
     }
 
-    public Set<String> getRunTasks() {
-        return runTasks.get();
+    public Set<String> getModulePathTasks() {
+        return modulePathTasks.get();
     }
 
     /**
-     * Set the names of the {@link org.gradle.api.tasks.JavaExec} tasks that get the JavaFX modules
-     * put on the module path when running a non-modular application. Defaults to 'run'.
-     * @param runTasks List of task names
+     * Set the names of the {@link org.gradle.api.tasks.JavaExec} and {@link org.gradle.api.tasks.testing.Test} tasks
+     * that get the JavaFX modules put on the module path when running non-modular code. Defaults to 'run'.
+     * @param modulePathTasks List of task names
      */
-    public void setRunTasks(List<String> runTasks) {
-        this.runTasks.set(runTasks);
+    public void setModulePathTasks(List<String> modulePathTasks) {
+        this.modulePathTasks.set(modulePathTasks);
     }
 
-    public void runTasks(String...taskNames) {
-        setRunTasks(List.of(taskNames));
+    public void modulePathTasks(String...taskNames) {
+        setModulePathTasks(List.of(taskNames));
     }
 
     private void declareFXDependencies(String conf) {
