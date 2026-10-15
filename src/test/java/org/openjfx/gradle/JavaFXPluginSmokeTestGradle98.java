@@ -32,11 +32,6 @@ package org.openjfx.gradle;
 class JavaFXPluginSmokeTestGradle98 extends JavaFXPluginSmokeTest {
 
     @Override
-    protected int getMinJavaVersion() {
-        return 17;
-    }
-
-    @Override
     protected String getGradleVersion() {
         return "9.8.1";
     }

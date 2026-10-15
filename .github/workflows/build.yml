@@ -24,22 +24,13 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          # the last version becomes the default JAVA_HOME
-          java-version: |
-            17
-            11
+          java-version: 17
 
       - name: Build and verify project
         run: |
           export DISPLAY=:90
           Xvfb -ac :90 -screen 0 1280x1024x24 > /dev/null 2>&1 &
           ./gradlew clean build -i
-
-      - name: Test on JDK 17
-        run: |
-          export DISPLAY=:91
-          Xvfb -ac :91 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-          ./gradlew test -PtestJdk=17 -Porg.gradle.java.installations.fromEnv=JAVA_HOME_17_X64 -i
 
       - name: Publish Snapshots
         if: github.ref == 'refs/heads/master'
