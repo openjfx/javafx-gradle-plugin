@@ -86,24 +86,30 @@ public class JavaFXPlugin implements Plugin<Project> {
         project.afterEvaluate(new Action<Project>() {
             @Override
             public void execute(Project project) {
-                if (!project.getPlugins().hasPlugin("application") ||
-                        (project.getPlugins().hasPlugin("org.javamodularity.moduleplugin")) && project.getExtensions().findByName("modulename") != null) {
+                if (project.getPlugins().hasPlugin("org.javamodularity.moduleplugin") && project.getExtensions().findByName("modulename") != null) {
                     return;
                 }
 
-                project.getTasks().named("run", JavaExec.class, new Action<JavaExec>() {
-                    @Override
-                    public void execute(JavaExec task) {
-                        if (task.getMainModule().isPresent()) {
-                            return;
-                        }
-                        final var fxPlatform = javaFXOptions.getFxPlatform();
-                        final var fxModules = javaFXOptions.getFxModules();
-                        task.doFirst(a -> {
-                            putJavaFXJarsOnModulePathForClasspathApplication(task, fxPlatform, fxModules);
-                        });
+                for (String runTask : javaFXOptions.getRunTasks()) {
+                    // Only the 'run' task depends on the 'application' plugin, other run tasks are configured explicitly.
+                    if (runTask.equals(ApplicationPlugin.TASK_RUN_NAME) && !project.getPlugins().hasPlugin("application")) {
+                        continue;
                     }
-                });
+
+                    project.getTasks().named(runTask, JavaExec.class, new Action<JavaExec>() {
+                        @Override
+                        public void execute(JavaExec task) {
+                            if (task.getMainModule().isPresent()) {
+                                return;
+                            }
+                            final var fxPlatform = javaFXOptions.getFxPlatform();
+                            final var fxModules = javaFXOptions.getFxModules();
+                            task.doFirst(a -> {
+                                putJavaFXJarsOnModulePathForClasspathApplication(task, fxPlatform, fxModules);
+                            });
+                        }
+                    });
+                }
 
             }
         });
@@ -112,7 +118,7 @@ public class JavaFXPlugin implements Plugin<Project> {
 
     /**
      * Gradle does currently not put anything on the --module-path if the application itself is executed from
-     * the classpath. Hence, this patches the setup of Gradle's standard ':run' task to move all JavaFX Jars
+     * the classpath. Hence, this patches the setup of the configured run tasks (default: ':run') to move all JavaFX Jars
      * from '-classpath' to '-module-path'. This functionality is only relevant for NON-MODULAR apps.
      */
     private static void putJavaFXJarsOnModulePathForClasspathApplication(JavaExec execTask, final Property<JavaFXPlatform> platform, final SetProperty<String> stringSetProperty) {

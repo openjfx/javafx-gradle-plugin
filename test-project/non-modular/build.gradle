@@ -14,7 +14,13 @@ application {
     }
 }
 
+tasks.register('runOther', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.openjfx.gradle.javafx.test.Main'
+}
+
 javafx {
     version = '17.0.20'
     modules = [ 'javafx.controls', 'javafx.web' ]
+    runTasks = [ 'run', 'runOther' ]
 }

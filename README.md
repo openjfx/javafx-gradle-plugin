@@ -173,7 +173,7 @@ javafx {
 }
 </code></pre>
 
-### 5. Using a local JavaFX SDK
+### 6. Using a local JavaFX SDK
 
 By default, JavaFX modules are retrieved from Maven Central. 
 However, a local JavaFX SDK can be used instead, for instance in the case of 
@@ -196,6 +196,30 @@ javafx {
 javafx {
     <b>sdk = "/path/to/javafx-sdk"</b>
     modules("javafx.controls", "javafx.fxml")
+}
+</code></pre>
+
+### 7. Additional run tasks
+
+For non-modular applications, the plugin moves the JavaFX jars of the `run` task from the classpath to the module path.
+If your build has further `JavaExec` tasks that start the application, e.g. with a Java agent,
+they can be configured via `runTasks` (default: `run`):
+
+**Groovy**
+
+<pre><code>
+javafx {
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+    <b>runTasks = [ 'run', 'runAgent' ]</b>
+}
+</code></pre>
+
+**Kotlin**
+
+<pre><code>
+javafx {
+    modules("javafx.controls", "javafx.fxml")
+    <b>runTasks("run", "runAgent")</b>
 }
 </code></pre>
     

@@ -122,6 +122,16 @@ abstract class JavaFXPluginSmokeTest {
     }
 
     @Test
+    void smokeTestNonModularOtherRunTask() {
+        var result = build(":non-modular:runOther");
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":non-modular:runOther").getOutcome());
+
+        assertEquals(List.of("main", "main"), runtimeClassPath(result).get(0));
+        assertEquals(List.of("javafx-base-17.0.20-" + classifier + ".jar", "javafx-controls-17.0.20-" + classifier + ".jar", "javafx-graphics-17.0.20-" + classifier + ".jar", "javafx-media-17.0.20-" + classifier + ".jar", "javafx-web-17.0.20-" + classifier + ".jar"), modulePath(result).get(0));
+    }
+
+    @Test
     void smokeTestTransitive() {
         var result = build(":transitive:run");
 
