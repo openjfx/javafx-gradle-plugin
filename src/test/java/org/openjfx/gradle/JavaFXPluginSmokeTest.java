@@ -34,6 +34,7 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -56,6 +57,27 @@ abstract class JavaFXPluginSmokeTest {
     }
 
     protected abstract String getGradleVersion();
+
+    /**
+     * Lowest JDK version the Gradle version under test runs on.
+     */
+    protected int getMinJavaVersion() {
+        return 11;
+    }
+
+    /**
+     * Highest JDK version the Gradle version under test runs on.
+     */
+    protected int getMaxJavaVersion() {
+        return Integer.MAX_VALUE;
+    }
+
+    @BeforeEach
+    void checkJavaVersion() {
+        int javaVersion = Runtime.version().feature();
+        Assumptions.assumeTrue(javaVersion >= getMinJavaVersion() && javaVersion <= getMaxJavaVersion(),
+                "Gradle " + getGradleVersion() + " does not run on JDK " + javaVersion);
+    }
 
     protected String modularApplicationRuntime() {
         return "modular-with-modularity-plugin.jar";

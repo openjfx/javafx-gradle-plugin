@@ -26,6 +26,13 @@ dependencies {
 
 tasks.named('test', Test) {
     useJUnitPlatform()
+    // run the tests (and thereby the tested Gradle versions) on another JDK, e.g. -PtestJdk=17
+    def testJdk = providers.gradleProperty('testJdk')
+    if (testJdk.isPresent()) {
+        javaLauncher = javaToolchains.launcherFor {
+            languageVersion = JavaLanguageVersion.of(testJdk.get() as int)
+        }
+    }
 }
 
 gradlePlugin {

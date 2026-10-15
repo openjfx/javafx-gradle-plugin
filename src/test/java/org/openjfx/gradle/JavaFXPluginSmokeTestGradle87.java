@@ -36,5 +36,8 @@ class JavaFXPluginSmokeTestGradle87 extends JavaFXPluginSmokeTest {
         return "8.7";
     }
 
-
+    @Override
+    protected int getMaxJavaVersion() {
+        return 21;
+    }
 }
