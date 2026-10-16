@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, Gluon
+ * Copyright (c) 2026, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,14 +27,20 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openjfx.gradle;
+package org.openjfx.gradle.javafx.tests;
 
+import javafx.scene.Node;
+import org.junit.jupiter.api.Test;
+import org.openjfx.gradle.javafx.test.Main;
 
-class JavaFXPluginSmokeTestGradle64 extends JavaFXPluginSmokeTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-    @Override
-    protected String getGradleVersion() {
-        return "6.4";
+class JavaFXModuleTest {
+
+    @Test
+    void testsRunAsModules() {
+        assertEquals("org.openjfx.gradle.javafx.tests", JavaFXModuleTest.class.getModule().getName());
+        assertEquals("org.openjfx.gradle.javafx.test", Main.class.getModule().getName());
+        assertEquals("javafx.graphics", Node.class.getModule().getName());
     }
-
 }

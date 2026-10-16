@@ -36,6 +36,7 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.FlatDirectoryArtifactRepository;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.SourceSetContainer;
@@ -56,6 +57,7 @@ abstract public class JavaFXOptions {
     static final String MAVEN_JAVAFX_ARTIFACT_GROUP_ID = "org.openjfx";
     private static final String JAVAFX_SDK_LIB_FOLDER = "lib";
     private final SetProperty<String> modules;
+    private final SetProperty<String> modulePathTasks;
     private final Property<JavaFXPlatform> platform;
 
 
@@ -85,6 +87,8 @@ abstract public class JavaFXOptions {
         getFxPlatform().convention(JavaFXPlatform.detect(osDetector));
         setClasspathAttributesForAllSourceSets();
         modules = getObjects().setProperty(String.class);
+        modulePathTasks = getObjects().setProperty(String.class);
+        modulePathTasks.convention(Set.of(ApplicationPlugin.TASK_RUN_NAME));
     }
 
 
@@ -191,6 +195,27 @@ abstract public class JavaFXOptions {
 
     public void modules(String...moduleNames) {
         setModules(List.of(moduleNames));
+    }
+
+    public SetProperty<String> getFxModulePathTasks() {
+        return modulePathTasks;
+    }
+
+    public Set<String> getModulePathTasks() {
+        return modulePathTasks.get();
+    }
+
+    /**
+     * Set the names of the {@link org.gradle.api.tasks.JavaExec} and {@link org.gradle.api.tasks.testing.Test} tasks
+     * that get the JavaFX modules put on the module path when running non-modular code. Defaults to 'run'.
+     * @param modulePathTasks List of task names
+     */
+    public void setModulePathTasks(List<String> modulePathTasks) {
+        this.modulePathTasks.set(modulePathTasks);
+    }
+
+    public void modulePathTasks(String...taskNames) {
+        setModulePathTasks(List.of(taskNames));
     }
 
     private void declareFXDependencies(String conf) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Gluon
+ * Copyright (c) 2026, Gluon
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,12 +27,10 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.openjfx.gradle;
+module org.openjfx.gradle.javafx.tests {
+    requires org.openjfx.gradle.javafx.test;
+    requires javafx.graphics;
+    requires org.junit.jupiter.api;
 
-class JavaFXPluginSmokeTestGradle69 extends JavaFXPluginSmokeTest {
-
-    @Override
-    protected String getGradleVersion() {
-        return "6.9.4";
-    }
+    opens org.openjfx.gradle.javafx.tests to org.junit.platform.commons;
 }

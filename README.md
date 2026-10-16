@@ -6,6 +6,11 @@ Simplifies working with JavaFX 11+ for gradle projects.
 ![Github Actions](https://github.com/openjfx/javafx-gradle-plugin/actions/workflows/build.yml/badge.svg)
 [![BSD-3 license](https://img.shields.io/badge/license-BSD--3-%230778B9.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
+## Requirements
+
+The plugin requires Gradle to run on `JDK 17` or higher, and therefore `Gradle 7.3` or higher.
+Your application itself can still target an older Java version, e.g. via a toolchain.
+
 ## Getting started
 
 To use the plugin, apply the following two steps:
@@ -173,7 +178,7 @@ javafx {
 }
 </code></pre>
 
-### 5. Using a local JavaFX SDK
+### 6. Using a local JavaFX SDK
 
 By default, JavaFX modules are retrieved from Maven Central. 
 However, a local JavaFX SDK can be used instead, for instance in the case of 
@@ -198,6 +203,31 @@ javafx {
     modules("javafx.controls", "javafx.fxml")
 }
 </code></pre>
+
+### 7. Additional run and test tasks
+
+For non-modular applications, the plugin moves the JavaFX jars of the `run` task from the classpath to the module path.
+If your build has further `JavaExec` tasks that start the application, e.g. with a Java agent,
+or `Test` tasks that need JavaFX on the module path, they can be configured via `modulePathTasks` (default: `run`).
+Modular applications and modular tests are not changed, as Gradle already puts JavaFX on the module path for them.
+
+**Groovy**
+
+<pre><code>
+javafx {
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+    <b>modulePathTasks = [ 'run', 'runAgent', 'test' ]</b>
+}
+</code></pre>
+
+**Kotlin**
+
+<pre><code>
+javafx {
+    modules("javafx.controls", "javafx.fxml")
+    <b>modulePathTasks("run", "runAgent", "test")</b>
+}
+</code></pre>
     
 ## Issues and Contributions
 
@@ -218,11 +248,11 @@ there's a migration scenario not covered here that should be included.
 
 ### Troubleshooting
 
-#### Gradle version
+#### Gradle and JDK version
 
-The plugin now requires `Gradle 6.1` or higher. Consider updating your Gradle settings, wrapper,
-and build to a more recent version of Gradle. Additionally, updating your plugins and dependencies
-can help minimize issues with the plugin.
+Make sure your build meets the [requirements](#requirements). Consider updating your Gradle
+settings, wrapper, and build to a more recent version of Gradle. Additionally, updating your
+plugins and dependencies can help minimize issues with the plugin.
 
 #### Mixed JavaFX jars
 

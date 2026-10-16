@@ -40,4 +40,9 @@ class JavaFXPluginSmokeTestGradle814CC extends JavaFXPluginSmokeTest {
     protected boolean useConfigurationCache() {
         return true;
     }
+
+    @Override
+    protected int getMaxJavaVersion() {
+        return 24;
+    }
 }
